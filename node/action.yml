@@ -7,9 +7,6 @@ inputs:
   docker_image_name:
     description: 'Docker image name'
     required: true
-  github_token:
-    description: 'GitHub token for authentication'
-    required: true
   sonar_token:
     description: 'Token for SonarCloud access'
     required: true
@@ -19,6 +16,12 @@ inputs:
   dockerhub_token:
     description: 'DockerHub token for authentication'
     required: true
+  github_token:
+    description: 'Automatically created token. Set this to the GITHUB_TOKEN secret'
+    required: true
+  gitleaks_token:
+    description: 'Organisational token for Gitleaks'
+    required: false # only required for Organizations, not personal accounts
 
 runs:
   using: 'composite'
@@ -28,3 +31,9 @@ runs:
 
     - name: Validate conventional commits
       uses: wagoid/commitlint-github-action@v6    
+
+    - name: Scan for secrets
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITLEAKS_LICENSE: ${{ inputs.gitleaks_token }} 
