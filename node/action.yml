@@ -1,0 +1,30 @@
+name: Angular CI
+description: 'Builds, tests, and deploys a Node.js Angular application'
+
+inputs:
+  node_version:
+    description: 'Node Version'
+  docker_image_name:
+    description: 'Docker image name'
+    required: true
+  github_token:
+    description: 'GitHub token for authentication'
+    required: true
+  sonar_token:
+    description: 'Token for SonarCloud access'
+    required: true
+  dockerhub_username:
+    description: 'DockerHub username'
+    required: true
+  dockerhub_token:
+    description: 'DockerHub token for authentication'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Validate conventional commits
+      uses: wagoid/commitlint-github-action@v6    
