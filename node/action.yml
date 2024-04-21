@@ -2,13 +2,22 @@ name: Angular CI
 description: 'Builds, tests, and deploys a Node.js Angular application'
 
 inputs:
+  github_token:
+    description: 'Automatically created token. Set this to the GITHUB_TOKEN secret'
+    required: true
+  gitleaks_token:
+    description: 'Organisational token for Gitleaks'
+    required: false # only required for Organizations, not personal accounts
   node_version:
     description: 'Node Version'
+  sonar_token:
+    description: 'Token for SonarCloud access'
+    required: true
+  sonar_args:
+    description: 'Custom SonarCloud arguments'
   docker_image_name:
     description: 'Docker image name'
     required: true
-  sonar_token:
-    description: 'Token for SonarCloud access'
     required: true
   dockerhub_username:
     description: 'DockerHub username'
@@ -16,12 +25,6 @@ inputs:
   dockerhub_token:
     description: 'DockerHub token for authentication'
     required: true
-  github_token:
-    description: 'Automatically created token. Set this to the GITHUB_TOKEN secret'
-    required: true
-  gitleaks_token:
-    description: 'Organisational token for Gitleaks'
-    required: false # only required for Organizations, not personal accounts
 
 runs:
   using: 'composite'
@@ -60,6 +63,14 @@ runs:
       run: npm ci
       shell: bash
 
-    - name: Build Angular application
-      run: npm run build
+    - name: Test Angular application (headless)
+      run: npm run test:ci
       shell: bash
+
+    - name: Sonarcloud SAST
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        SONAR_TOKEN: ${{ inputs.sonar_token }}
+      with:
+        args: ${{ inputs.sonar_args }}
