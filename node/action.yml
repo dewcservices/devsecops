@@ -15,9 +15,9 @@ inputs:
     required: true
   sonar_args:
     description: 'Custom SonarCloud arguments'
+    required: true
   docker_image_name:
     description: 'Docker image name'
-    required: true
     required: true
   dockerhub_username:
     description: 'DockerHub username'
@@ -61,6 +61,10 @@ runs:
 
     - name: Install dependencies
       run: npm ci
+      shell: bash
+
+    - name: Create test:ci
+      run: npm pkg set scripts.test:ci="ng test --no-watch --no-progress --browsers=ChromeHeadless"
       shell: bash
 
     - name: Test Angular application (headless)
