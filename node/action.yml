@@ -145,7 +145,7 @@ runs:
         if [[ $(echo ${{ steps.semantic.outputs.new_release_published }}) = "true" ]]; then
           echo "image_tag=$(echo ${{ steps.semantic.outputs.new_release_version }})" >> $GITHUB_ENV
         else
-          echo "image_tag=$(echo ${{ steps.semantic.outputs.last_release_version }})" >> $GITHUB_ENV
+          echo "image_tag=$(echo $(git describe --tags --abbrev=0 | sed 's/^v//'))" >> $GITHUB_ENV
         fi        
       shell: bash
 
