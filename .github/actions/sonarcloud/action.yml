@@ -1,0 +1,30 @@
+name: SonarCloud CI
+description: 'Builds, tests, and deploys a Python application'
+
+inputs:
+  github_token:
+    description: 'Automatically created token. Set this to the GITHUB_TOKEN secret'
+    required: true
+  sonar_token:
+    description: 'Token for SonarCloud access'
+    required: true
+  sonar_args:
+    description: 'Custom SonarCloud arguments'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+  - name: SonarCloud Scan
+    uses: SonarSource/sonarcloud-github-action@master
+    with:
+      args: ${{ inputs.sonar_args }}
+    env: 
+      SONAR_TOKEN: ${{ inputs.sonar_token }}
+      GITHUB_TOKEN: ${{ inputs.github_token }}
+  - name: Clean up .scannerwork folder
+  # Sonarcloud schedules cleanup at END of workflow, if another action does a checkout before this, it will break.
+  # This is a workaround, details here: https://github.com/SonarSource/sonarqube-scan-action/issues/22#issuecomment-1906822668
+    shell: bash
+    run: |
+      sudo rm -rf .scannerwork

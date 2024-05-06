@@ -1,0 +1,48 @@
+name: Python CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      packages: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Run Custom SonarCloud action
+      uses: ./.github/actions/sonarcloud/
+      with: 
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        sonar_token: ${{ secrets.SONAR_TOKEN }}
+        sonar_args: >
+          -D sonar.organization=scottahern
+          -D sonar.projectKey=scottahern_action-testing
+
+    - name: Run Custom PyTest action
+      uses: ./.github/actions/pytest/
+      with: 
+        python_version: "3.10"
+
+    - name: Run Custom Dockerhub action
+      uses: ./.github/actions/dockerhub/
+      with: 
+        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+        build_context: "src/python_app"
+        dockerhub_repo_owner: ${{ secrets.DOCKERHUB_USERNAME }}
+        image_name: "test-python-project"
+        image_tag: "latest"
