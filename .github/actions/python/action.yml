@@ -1,0 +1,89 @@
+name: PyTest CI
+description: 'Tests a Python application using PyTest and flake8'
+
+inputs:
+  python_version:
+    description: 'Required Python version'
+    required: true
+  pytest_coverage_xml_file_name:
+    description: 'PyTest coverage report path'
+    required: false
+    default: ''
+  pytest_coverage_fail_percent:
+    description: 'Fails if coverage is under this percent'
+    required: false
+    default: 0
+  
+runs:
+  using: 'composite'
+  steps:
+  - name: Set up Python
+    uses: actions/setup-python@v4
+    id: setup_python
+    with:
+      python-version: ${{ inputs.python_version }}
+
+  - name: Cache venv
+    uses: actions/cache@v3
+    id: cache-venv
+    # Cache naming convention from:
+    # https://adamj.eu/tech/2023/11/02/github-actions-faster-python-virtual-environments/
+    # strict versioning inside requirements.txt required 
+    with:
+      key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('**/*requirements.txt') }}
+      path: ~/src/python_app/.venv
+
+  - name: Install dependencies
+    if: steps.cache-primes.outputs.cache-hit != 'true'
+    shell: bash
+    run: |
+      python3 -m venv ~/src/python_app/.venv
+      ~/src/python_app/.venv/bin/python -m pip install --upgrade pip
+      ~/src/python_app/.venv/bin/pip install -r src/python_app/requirements.txt
+
+    # Good explaination of different Python linting and formatting tools:
+    # https://inventwithpython.com/blog/2022/11/19/python-linter-comparison-2022-pylint-vs-pyflakes-vs-flake8-vs-autopep8-vs-bandit-vs-prospector-vs-pylama-vs-pyroma-vs-black-vs-mypy-vs-radon-vs-mccabe/
+
+  - name: Check Format with Black
+    uses: psf/black@stable
+    with:
+      options: "--check --verbose --diff"
+      src: "./src/python_app"
+
+  - name: Error, Style Lint and Complexity Analysis with flake8
+    shell: bash
+    # with below, flake8 will run on ALL directories within src/python_app
+    # to exclude directories, edit .flake8
+    run: |
+      # flake8 - stop the build if there are Python syntax errors or undefined names
+      ~/src/python_app/.venv/bin/python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      # flake8 - exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+      ~/src/python_app/.venv/bin/python -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  - name: Parse PyTest coverage xml file name option
+    shell: bash
+    if: ${{ inputs.pytest_coverage_xml_file_name }} != ''
+    run: |
+      echo "pytest_report_name_options=$(echo '--cov-report=xml:${{ inputs.pytest_coverage_xml_file_name }} --cov-report=term-missing:skip-covered')" >> $GITHUB_ENV
+
+  - name: Parse PyTest coverage fail percent option
+    shell: bash
+    if: ${{ inputs.pytest_coverage_fail_percent }} != 0
+    run: |
+      echo "pytest_fail_percent_options=$(echo '--cov-fail-under=${{ inputs.pytest_coverage_fail_percent }}')" >> $GITHUB_ENV
+
+  - name: Test with PyTest
+    shell: bash
+    run: |
+      ~/src/python_app/.venv/bin/python -m pytest --cov ${{ env.pytest_report_name_options }} ${{ env.pytest_fail_percent_options }}
+
+  - name: Type Check with Mypy
+    shell: bash
+    run: |
+      ~/src/python_app/.venv/bin/python -m mypy src/python_app
+
+  - name: Security Lint with Bandit
+    shell: bash
+    run: |
+      # bandit - log level low, critical issues only. Reports only if high confidence
+      ~/src/python_app/.venv/bin/python -m bandit -ll -ii -r . -x ./.venv

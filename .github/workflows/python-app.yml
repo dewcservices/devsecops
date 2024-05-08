@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  # needed for converting pytest coverage to sonarcloud formatting, details here:
+  # https://copdips.com/2023/01/sonarcloud-github-action.html#file-githubworkflowsciyml
+  pytest_coverage_xml_file_name: coverage-reports/pytest-coverage.xml
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,19 +28,34 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Validate conventional commits
+      uses: wagoid/commitlint-github-action@v6
+
+    - name: Scan for secrets
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_TOKEN }}
+
+    - name: Run Custom Python CI action
+      uses: ./.github/actions/python/
+      with: 
+        python_version: "3.10"
+        pytest_coverage_xml_file_name: ${{ env.pytest_coverage_xml_file_name }}
+        pytest_coverage_fail_percent: 50
+
     - name: Run Custom SonarCloud action
       uses: ./.github/actions/sonarcloud/
       with: 
         github_token: ${{ secrets.GITHUB_TOKEN }}
         sonar_token: ${{ secrets.SONAR_TOKEN }}
+        pytest_coverage_xml_file_name: ${{ env.pytest_coverage_xml_file_name }}
         sonar_args: >
           -D sonar.organization=scottahern
           -D sonar.projectKey=scottahern_action-testing
-
-    - name: Run Custom PyTest action
-      uses: ./.github/actions/pytest/
-      with: 
-        python_version: "3.10"
+          -D sonar.exclusions=~/src/python_app/.venv/**
+          -D sonar.python.coverage.reportPaths=${{ env.pytest_coverage_xml_file_name }}
+          -D sonar.sources=src/python_app
 
     - name: Run Custom Dockerhub action
       uses: ./.github/actions/dockerhub/

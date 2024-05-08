@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM cgr.dev/chainguard/python:latest
 
 WORKDIR /wallet
 
