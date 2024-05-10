@@ -119,7 +119,7 @@ runs:
 
     - name: Add Trivy output to action summary
       run: | 
-        echo "<h1>:test_tube: Trivy Results :test_tube:</h1>" >> $GITHUB_STEP_SUMMARY
+        echo "<h1>Trivy Results :test_tube:</h1>" >> $GITHUB_STEP_SUMMARY
         cat trivy-high-critical.md >> $GITHUB_STEP_SUMMARY
       shell: bash
 
