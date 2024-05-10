@@ -115,15 +115,23 @@ runs:
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
 
+    - name: Check if repository is public or private
+      run: |
+        curl -H "Authorization: token ${{ inputs.github_token }}" \
+             -H "Accept: application/vnd.github.v3+json" \
+             "https://api.github.com/repos/${{ github.repository }}" > repo_details.json
+        echo "private_repo=$(jq -r '.private' repo_details.json)" >> $GITHUB_ENV
+      shell: bash
+
     - name: Login to dockerhub
-      if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' }} 
+      if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' && env.private_repo == 'false' }} 
       uses: docker/login-action@v3
       with:
         username: ${{ inputs.dockerhub_username }}
         password: ${{ inputs.dockerhub_token }}
 
-    - name: Login to GitHub Container Registry (For repository packages)
-      if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push'}} 
+    - name: Login to GitHub Container Registry
+      if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' && env.private_repo == 'true' }} 
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
@@ -139,14 +147,22 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
 
-    - name: Set image tag
+    - name: Set image tag and name
       if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' }}
       run: |
+        # set image tag
         if [[ $(echo ${{ steps.semantic.outputs.new_release_published }}) = "true" ]]; then
           echo "image_tag=$(echo ${{ steps.semantic.outputs.new_release_version }})" >> $GITHUB_ENV
         else
           echo "image_tag=$(echo $(git describe --tags --abbrev=0 | sed 's/^v//'))" >> $GITHUB_ENV
-        fi        
+        fi
+
+        # set image name
+        if [[ ${{ env.private_repo }} = "true" ]]; then
+          echo "image_name=$(echo ghcr.io/${{ github.repository_owner }}/${{ inputs.docker_image_name }})" >> $GITHUB_ENV
+        else
+          echo "image_name=$(echo ${{ inputs.dockerhub_username }}/${{ inputs.docker_image_name }})" >> $GITHUB_ENV
+        fi       
       shell: bash
 
     - name: Extract metadata (tags, labels) for Docker
@@ -154,9 +170,7 @@ runs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: |
-          ${{ inputs.dockerhub_username }}/${{ inputs.docker_image_name }}
-          ghcr.io/${{ github.repository_owner }}/${{ inputs.docker_image_name }}
+        images: ${{ env.image_name }}
         tags: |
           ${{ env.image_tag }}
           latest
