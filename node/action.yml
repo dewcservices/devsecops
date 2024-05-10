@@ -13,10 +13,10 @@ inputs:
     required: false
   sonar_token:
     description: 'Token for SonarCloud access'
-    required: true
+    required: false
   sonar_args:
     description: 'Custom SonarCloud arguments'
-    required: true
+    required: false
   docker_image_name:
     description: 'Docker image name'
     required: true
@@ -79,6 +79,7 @@ runs:
       shell: bash
 
     - name: Sonarcloud SAST
+      if: ${{ inputs.sonar_token != '' }}
       uses: sonarsource/sonarcloud-github-action@master
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
@@ -109,11 +110,18 @@ runs:
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
-        format: 'table'
-        exit-code: '1'
+        format: template
+        template: "@/github/workspace/.github/actions/node/trivy.tpl"
+        output: trivy-high-critical.md
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
+
+    - name: Add Trivy output to action summary
+      run: | 
+        echo "<h1>:test_tube: Trivy Results :test_tube:</h1>" >> $GITHUB_STEP_SUMMARY
+        cat trivy-high-critical.md >> $GITHUB_STEP_SUMMARY
+      shell: bash
 
     - name: Check if repository is public or private
       run: |
