@@ -22,10 +22,10 @@ inputs:
     required: true
   dockerhub_username:
     description: 'Dockerhub username'
-    required: true
+    required: false
   dockerhub_token:
     description: 'Dockerhub Token'
-    required: true
+    required: false
 
 runs:
   using: 'composite'
