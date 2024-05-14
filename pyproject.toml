@@ -4,5 +4,5 @@ pythonpath = "src/python_app"
 [tool.mypy]
 ignore_missing_imports = true
 
-[tool.bandit]
-exclude_dirs = "src/python_app/.venv"
+[tool.isort]
+profile = "black"

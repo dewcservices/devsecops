@@ -1,0 +1,90 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/devcontainers/images/tree/main/src/python
+{
+    "name": "Python",
+    "build": {
+        "dockerfile": "./Dockerfile",
+        "context": "."
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": "true",
+            "username": "vscode",
+            "userUid": "1000",
+            "userGid": "1000",
+            "upgradePackages": "true"
+        },
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/git:1": {
+            "version": "latest",
+            "ppa": "false"
+        },
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/go:1": {
+            "version": "latest"
+        }
+    },
+    // Configure tool-specific properties.
+    "customizations": {
+        // Configure properties specific to VS Code.
+        "vscode": {
+            // Set *default* container specific settings.json values on container create.
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.editor.defaultFormatter": "ms-python.black-formatter",
+                "editor.formatOnSave": true,
+                "python.testing.pytestEnabled": true,
+                "python.editor.codeActionsOnSave": {
+                    "source.organizeImports": true
+                }
+            },
+            "extensions": [
+                "sonarsource.sonarlint-vscode",
+                "ms-python.black-formatter",
+                "ms-python.python",
+                "ms-python.isort",
+                "ms-python.mypy-type-checker",
+                "donjayamanne.python-extension-pack",
+                "ms-azuretools.vscode-docker",
+                "ms-python.flake8",
+                "github.vscode-github-actions"
+            ]
+        }
+    },
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    // "forwardPorts": [],
+    // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+    "remoteUser": "vscode",
+    // Use 'postCreateCommand' to run commands after the container is created. Care, execution order is not sequential.
+    // Commitlint config workarounds: https://github.com/conventional-changelog/commitlint/issues/613
+    // 'husky init' will not work without package.json file (for non node projects), 'husky' instead still works and activate hooks.
+    "postCreateCommand": {
+        "install_commitlint": [
+            "/bin/bash",
+            "-c",
+            "npm install --yes -g @commitlint/cli @commitlint/config-conventional"
+        ],
+        "install husky": [
+            "/bin/bash",
+            "-c",
+            "npm install --yes -g husky && husky && echo 'commitlint --extends '@commitlint/config-conventional' --edit ${1}' > .husky/commit-msg && echo 'docker run -v $PWD:/path ghcr.io/gitleaks/gitleaks:latest protect -v --staged --source=/path' > .husky/pre-commit"
+        ],
+        "update_python_modules": [
+            "/bin/bash",
+            "-c",
+            "pip --no-cache-dir install -r requirements-dev.txt"
+        ],
+        "pull_gitleak_docker": [
+            "/bin/bash",
+            "-c",
+            "docker pull ghcr.io/gitleaks/gitleaks:latest"
+        ]
+    }
+}

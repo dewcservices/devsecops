@@ -30,7 +30,7 @@ runs:
     # https://adamj.eu/tech/2023/11/02/github-actions-faster-python-virtual-environments/
     # strict versioning inside requirements.txt required 
     with:
-      key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('**/*requirements.txt') }}
+      key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('**/*requirements-dev.txt') }}
       path: ~/src/python_app/.venv
 
   - name: Install dependencies
@@ -39,7 +39,7 @@ runs:
     run: |
       python3 -m venv ~/src/python_app/.venv
       ~/src/python_app/.venv/bin/python -m pip install --upgrade pip
-      ~/src/python_app/.venv/bin/pip install -r src/python_app/requirements.txt
+      ~/src/python_app/.venv/bin/pip install -r requirements-dev.txt
 
     # Good explaination of different Python linting and formatting tools:
     # https://inventwithpython.com/blog/2022/11/19/python-linter-comparison-2022-pylint-vs-pyflakes-vs-flake8-vs-autopep8-vs-bandit-vs-prospector-vs-pylama-vs-pyroma-vs-black-vs-mypy-vs-radon-vs-mccabe/
@@ -75,7 +75,7 @@ runs:
   - name: Test with PyTest
     shell: bash
     run: |
-      ~/src/python_app/.venv/bin/python -m pytest --cov ${{ env.pytest_report_name_options }} ${{ env.pytest_fail_percent_options }}
+       ~/src/python_app/.venv/bin/python -m pytest --cov ${{ env.pytest_report_name_options }} ${{ env.pytest_fail_percent_options }}
 
   - name: Type Check with Mypy
     shell: bash
