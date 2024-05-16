@@ -2,63 +2,114 @@ name: PyTest CI
 description: 'Tests a Python application using PyTest and flake8'
 
 inputs:
+  source_dir:
+    description: 'Source directory for the python application'
+    required: true
   python_version:
     description: 'Required Python version'
-    required: true
+    required: false
+    default: "3.12"
   pytest_coverage_xml_file_name:
     description: 'PyTest coverage report path'
     required: false
-    default: ''
+    default: 'coverage-reports/coverage-pytest.xml'
   pytest_coverage_fail_percent:
     description: 'Fails if coverage is under this percent'
     required: false
-    default: 0
+    default: 50
+  poetry_version:
+    description: 'Required Poetry version'
+    required: false
+    default: '1.8.3'
+  pipx_packages:
+    description: 'Additional packages to install independantly using pipx'
+    required: false
+    default: ''
   
 runs:
   using: 'composite'
   steps:
+    # caching pipx: https://github.com/pypa/pipx/discussions/1051
+  - name: Setup Local Variables
+    id: variable_setup
+    run: |
+      echo "pipx_home=$PIPX_HOME" >> $GITHUB_OUTPUT
+      echo "pipx_bin_dir=$PIPX_BIN_DIR" >> $GITHUB_OUTPUT
+      export BASE64_PIPX_ID=$(echo -n 'poetry==${{ inputs.poetry_version }} ${{ inputs.pipx_packages }}' | base64 -w 0)
+      echo "cache_key_pipx=pipx-${{ runner.os }}-${{ inputs.python_version }}-$BASE64_PIPX_ID" >> $GITHUB_OUTPUT
+    shell: bash
+
+  - name: Cache pipx
+    id: cache_pipx
+    uses: actions/cache@v3
+    with:
+      # https://pypa.github.io/pipx/how-pipx-works
+      path: |
+        ${{ steps.variable_setup.outputs.pipx_home }}
+        ${{ steps.variable_setup.outputs.pipx_bin_dir }}
+      key: ${{ steps.variable_setup.outputs.cache_key_pipx }}
+
+  - name: Install Poetry ${{ inputs.poetry_version }} and '${{ steps.variable_setup.outputs.pipx_packages }}'
+    if: ${{ steps.cache_pipx.outputs.cache-hit != 'true' }}
+    run: |
+      export PIPX_TOOLS="black flake8 mypy bandit"
+      for tool in "poetry==${{ inputs.poetry_version }}" $PIPX_TOOLS ${{ inputs.pipx_packages }}; do
+        pipx install $tool
+      done
+      # Resolves https://github.com/python-poetry/poetry/issues/7611
+      poetry self add setuptools==68.1.2
+      pipx inject flake8 flake8-bugbear
+    shell: bash
+
+  - name: Debug pipx
+    run: |
+      pipx ensurepath
+      pipx list
+    shell: bash
+
   - name: Set up Python
     uses: actions/setup-python@v4
     id: setup_python
     with:
       python-version: ${{ inputs.python_version }}
+      cache: poetry
 
-  - name: Cache venv
-    uses: actions/cache@v3
-    id: cache-venv
-    # Cache naming convention from:
-    # https://adamj.eu/tech/2023/11/02/github-actions-faster-python-virtual-environments/
-    # strict versioning inside requirements.txt required 
-    with:
-      key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('**/*requirements-dev.txt') }}
-      path: ~/src/python_app/.venv
-
-  - name: Install dependencies
-    if: steps.cache-primes.outputs.cache-hit != 'true'
-    shell: bash
+  - name: Poetry config
     run: |
-      python3 -m venv ~/src/python_app/.venv
-      ~/src/python_app/.venv/bin/python -m pip install --upgrade pip
-      ~/src/python_app/.venv/bin/pip install -r requirements-dev.txt
+      poetry config virtualenvs.in-project true --local
+    shell: bash
 
-    # Good explaination of different Python linting and formatting tools:
-    # https://inventwithpython.com/blog/2022/11/19/python-linter-comparison-2022-pylint-vs-pyflakes-vs-flake8-vs-autopep8-vs-bandit-vs-prospector-vs-pylama-vs-pyroma-vs-black-vs-mypy-vs-radon-vs-mccabe/
+  - name: Cache Poetry .venv
+    uses: actions/cache@v3
+    id: cached_poetry_dependencies
+    with:
+      path: .venv
+      key: venv-${{ runner.os }}-${{ inputs.python_version }}-${{ inputs.poetry_version }}-${{ hashFiles('**/poetry.lock') }}
+
+  - name: Install Poetry dependencies
+    if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+    run: |
+      poetry --no-interaction install
+    shell: bash
+
+  # Good explaination of different Python linting and formatting tools:
+  # https://inventwithpython.com/blog/2022/11/19/python-linter-comparison-2022-pylint-vs-pyflakes-vs-flake8-vs-autopep8-vs-bandit-vs-prospector-vs-pylama-vs-pyroma-vs-black-vs-mypy-vs-radon-vs-mccabe/
 
   - name: Check Format with Black
     uses: psf/black@stable
     with:
       options: "--check --verbose --diff"
-      src: "./src/python_app"
+      src: "./${{ inputs.source_dir }}"
 
   - name: Error, Style Lint and Complexity Analysis with flake8
     shell: bash
-    # with below, flake8 will run on ALL directories within src/python_app
+    # with below, flake8 will run on ALL directories within $source_dir
     # to exclude directories, edit .flake8
     run: |
       # flake8 - stop the build if there are Python syntax errors or undefined names
-      ~/src/python_app/.venv/bin/python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
       # flake8 - exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-      ~/src/python_app/.venv/bin/python -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   - name: Parse PyTest coverage xml file name option
     shell: bash
@@ -75,15 +126,15 @@ runs:
   - name: Test with PyTest
     shell: bash
     run: |
-       ~/src/python_app/.venv/bin/python -m pytest --cov ${{ env.pytest_report_name_options }} ${{ env.pytest_fail_percent_options }}
+       poetry run pytest --cov ${{ env.pytest_report_name_options }} ${{ env.pytest_fail_percent_options }}
 
   - name: Type Check with Mypy
     shell: bash
     run: |
-      ~/src/python_app/.venv/bin/python -m mypy src/python_app
+      mypy ${{ inputs.source_dir }}
 
   - name: Security Lint with Bandit
     shell: bash
     run: |
       # bandit - log level low, critical issues only. Reports only if high confidence
-      ~/src/python_app/.venv/bin/python -m bandit -ll -ii -r . -x ./.venv
+      bandit -ll -ii -r . -x ./.venv

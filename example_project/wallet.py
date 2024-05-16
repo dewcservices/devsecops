@@ -14,3 +14,14 @@ class Wallet(object):
 
     def add_cash(self, amount):
         self.balance += amount
+
+
+def main():
+    wallet = Wallet(100)
+    wallet.add_cash(90)
+    wallet.spend_cash(10)
+    print(f"{wallet.balance}")
+
+
+if __name__ == "__main__":
+    main()

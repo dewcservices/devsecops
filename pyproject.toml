@@ -1,8 +1,25 @@
-[tool.pytest.ini_options]
-pythonpath = "src/python_app"
-
 [tool.mypy]
 ignore_missing_imports = true
 
 [tool.isort]
 profile = "black"
+
+[tool.poetry]
+name = "example_project"
+version = "1.0.1"
+description = "Test project for a Python CI using Github Actions"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+pytest-cov = "^5.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
