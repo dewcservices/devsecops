@@ -1,0 +1,30 @@
+name: Gradle CI Workflow
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      packages: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Custom Gradle action
+      uses: ./.github/actions/gradle
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        java_version: 17
+        sonar_token: ${{ secrets.SONAR_TOKEN }}
+        sonar_args: >
+          -Dsonar.organization=mo0nmann
+          -Dsonar.projectKey=mo0nmann_git-actions-test-gradle
+          -Dsonar.host.url=https://sonarcloud.io
+        docker_image_name: test-gradle-project
+        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
