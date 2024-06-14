@@ -2,6 +2,11 @@ name: Gradle CI Workflow
 
 on: [push, pull_request]
 
+env:
+  DOCKER_IMAGE_NAME: ""
+  SONAR_ORGANIZATION: ""
+  SONAR_PROJECT_KEY: ""
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,9 +27,9 @@ jobs:
         java_version: 17
         sonar_token: ${{ secrets.SONAR_TOKEN }}
         sonar_args: >
-          -Dsonar.organization=<ORGANIZATION>
-          -Dsonar.projectKey=<PROJECT KEY>
+          -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
+          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
           -Dsonar.host.url=https://sonarcloud.io
-        docker_image_name: <NAME OF IMAGE>
+        docker_image_name: ${{ env.DOCKER_IMAGE_NAME }}
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
