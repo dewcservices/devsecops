@@ -20,7 +20,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         node_version: "lts/*"
-        # sonar_token: ${{ secrets.SONAR_TOKEN }}
+        sonar_token: ${{ secrets.SONAR_TOKEN }}
         sonar_args: >
           -Dsonar.organization=mo0nmann
           -Dsonar.projectKey=mo0nmann_git-actions-test-node
