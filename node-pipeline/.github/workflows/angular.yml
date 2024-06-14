@@ -22,8 +22,8 @@ jobs:
         node_version: "lts/*"
         sonar_token: ${{ secrets.SONAR_TOKEN }}
         sonar_args: >
-          -Dsonar.organization=mo0nmann
-          -Dsonar.projectKey=mo0nmann_git-actions-test-node
-        docker_image_name: test-angular-project
+          -Dsonar.organization=<ORGANISATION>
+          -Dsonar.projectKey=<PROJECT KEY>
+        docker_image_name: <NAME OF IMAGE>
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
