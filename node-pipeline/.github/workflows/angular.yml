@@ -1,0 +1,29 @@
+name: Angular CI Workflow
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      packages: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Custom Angular.js action
+      uses: ./.github/actions/node
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        node_version: "lts/*"
+        sonar_token: ${{ secrets.SONAR_TOKEN }}
+        sonar_args: >
+          -Dsonar.organization=mo0nmann
+          -Dsonar.projectKey=mo0nmann_git-actions-test-node
+        docker_image_name: test-angular-project
+        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
