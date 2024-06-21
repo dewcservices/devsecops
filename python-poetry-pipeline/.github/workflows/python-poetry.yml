@@ -4,10 +4,12 @@ on: [push, pull_request]
 
 env:
   DOCKER_IMAGE_NAME: ""
-  PYTEST_COVERAGE_XML_FILE_NAME: "coverage-reports/coverage-pytest.xml"
-  PYTHON_APP_SOURCE_DIR: "src"
   SONAR_ORGANIZATION: ""
   SONAR_PROJECT_KEY: ""
+  PYTHON_APP_SOURCE_DIR: ""
+  PYTEST_COVERAGE_XML_FILE_NAME: "coverage-reports/coverage-pytest.xml"
+  PYTEST_COVERAGE_THRESHOLD_PERCENT: 50
+  PYTHON_APP_SOURCE_DIR: ""
 
 jobs:
   build:
@@ -44,3 +46,4 @@ jobs:
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
         build_context: ${{ env.PYTHON_APP_SOURCE_DIR }}
         docker_image_name: ${{ env.DOCKER_IMAGE_NAME }}
+        pytest_coverage_threshold_percent: ${{ env.PYTEST_COVERAGE_THRESHOLD_PERCENT }}

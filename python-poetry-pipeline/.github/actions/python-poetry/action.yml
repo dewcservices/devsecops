@@ -17,9 +17,6 @@ inputs:
   dockerhub_token:
     description: 'Access token for the Dockerhub account'
     required: true
-  build_context:
-    description: 'Directory that will be used for the build context'
-    required: true
   docker_image_name:
     description: 'Docker image name'
     required: true
@@ -34,7 +31,7 @@ inputs:
     description: 'PyTest coverage report path'
     required: false
     default: 'coverage-reports/coverage-pytest.xml'
-  pytest_coverage_fail_percent:
+  pytest_coverage_threshold_percent:
     description: 'Fails if coverage is under this percent'
     required: false
     default: 50
@@ -155,9 +152,9 @@ runs:
 
     - name: Parse PyTest coverage fail percent option
       shell: bash
-      if: ${{ inputs.pytest_coverage_fail_percent }} != 0
+      if: ${{ inputs.pytest_coverage_threshold_percent }} != 0
       run: |
-        echo "pytest_fail_percent_options=$(echo '--cov-fail-under=${{ inputs.pytest_coverage_fail_percent }}')" >> $GITHUB_ENV
+        echo "pytest_fail_percent_options=$(echo '--cov-fail-under=${{ inputs.pytest_coverage_threshold_percent }}')" >> $GITHUB_ENV
 
     - name: Test with PyTest
       shell: bash
