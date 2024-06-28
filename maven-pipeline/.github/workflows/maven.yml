@@ -1,0 +1,35 @@
+name: Maven CI Workflow
+
+on: [push, pull_request]
+
+env:
+  DOCKER_IMAGE_NAME: ""
+  SONAR_ORGANIZATION: ""
+  SONAR_PROJECT_KEY: ""
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      packages: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Custom Maven action
+      uses: ./.github/actions/maven
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        java_version: 17
+        sonar_token: ${{ secrets.SONAR_TOKEN }}
+        sonar_args: >
+          -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
+          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+          -Dsonar.host.url=https://sonarcloud.io
+        docker_image_name: ${{ env.DOCKER_IMAGE_NAME }}
+        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
