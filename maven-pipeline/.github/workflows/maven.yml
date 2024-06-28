@@ -24,6 +24,7 @@ jobs:
       uses: ./.github/actions/maven
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        gitleaks_token: ${{ secrets.GITLEAKS_TOKEN }}
         java_version: 17
         sonar_token: ${{ secrets.SONAR_TOKEN }}
         sonar_args: >
