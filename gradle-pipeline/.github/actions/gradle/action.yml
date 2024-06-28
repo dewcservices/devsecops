@@ -68,7 +68,7 @@ runs:
 
     - name: Sonarcloud SAST
       if: ${{ inputs.sonar_token != '' }}
-      run: ./gradlew sonar -Dsonar.token=${{ inputs.sonar_token }} ${{ inputs.sonar_args }}
+      run: ./gradlew sonar --init-script ./.github/actions/gradle/sonar-init.gradle -Dsonar.token=${{ inputs.sonar_token }} ${{ inputs.sonar_args }}
       shell: bash
 
     - name: Add QEMU support
