@@ -9,7 +9,6 @@ env:
   PYTHON_APP_SOURCE_DIR: ""
   PYTEST_COVERAGE_XML_FILE_NAME: "coverage-reports/coverage-pytest.xml"
   PYTEST_COVERAGE_THRESHOLD_PERCENT: 50
-  PYTHON_APP_SOURCE_DIR: ""
 
 jobs:
   build:
@@ -35,6 +34,7 @@ jobs:
         pytest_coverage_xml_file_name: ${{ env.PYTEST_COVERAGE_XML_FILE_NAME }}
         source_dir: ${{ env.PYTHON_APP_SOURCE_DIR }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        gitleaks_token: ${{ secrets.GITLEAKS_TOKEN }}
         sonar_token: ${{ secrets.SONAR_TOKEN }}
         sonar_args: >
           -D sonar.organization=${{ env.SONAR_ORGANIZATION }}

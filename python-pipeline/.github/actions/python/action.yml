@@ -5,6 +5,9 @@ inputs:
   github_token:
     description: 'Automatically created token. Set this to the GITHUB_TOKEN secret'
     required: true
+  gitleaks_token:
+    description: 'Organisational token for Gitleaks'
+    required: false # only required for Organizations, not personal accounts
   sonar_token:
     description: 'Token for SonarCloud access'
     required: true
