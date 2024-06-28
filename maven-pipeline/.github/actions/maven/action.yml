@@ -1,5 +1,5 @@
-name: Gradle CI
-description: 'Builds, tests, and deploys a Gradle application'
+name: Maven CI
+description: 'Builds, tests, and deploys a Maven application'
 
 inputs:
   github_token:
@@ -48,27 +48,25 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
         GITLEAKS_LICENSE: ${{ inputs.gitleaks_token }}
 
-    - name: Install Java
+    - name: Install Java & Maven
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: ${{ inputs.java_version }}
-        cache: gradle
+        cache: maven
 
-    - name: Setup gradle
-      uses: gradle/actions/setup-gradle@v3
-
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: Build with Maven
+      run: mvn clean install -DskipTests
       shell: bash
 
-    - name: Run tests
-      run: ./gradlew test
+    - name: Run maven tests
+      run: mvn org.apache.maven.plugins:maven-surefire-plugin:test
       shell: bash
 
     - name: Sonarcloud SAST
       if: ${{ inputs.sonar_token != '' }}
-      run: ./gradlew sonar --init-script ./.github/actions/gradle/sonar-init.gradle -Dsonar.token=${{ inputs.sonar_token }} ${{ inputs.sonar_args }}
+      run: |
+        mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar -Dsonar.token=${{ inputs.sonar_token }} ${{ inputs.sonar_args }}
       shell: bash
 
     - name: Add QEMU support
@@ -96,14 +94,14 @@ runs:
       with:
         image-ref: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
         format: template
-        template: "@/github/workspace/.github/actions/gradle/trivy.tpl"
+        template: "@/github/workspace/.github/actions/maven/trivy.tpl"
         output: trivy-high-critical.md
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
 
     - name: Add Trivy output to action summary
-      run: | 
+      run: |
         echo "<h1>Trivy Results :test_tube:</h1>" >> $GITHUB_STEP_SUMMARY
         cat trivy-high-critical.md >> $GITHUB_STEP_SUMMARY
       shell: bash
