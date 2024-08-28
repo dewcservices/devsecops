@@ -41,7 +41,7 @@ Finally, on SonarCloud, go to **My account > Security > Generate Tokens** and ge
 
 ### Dockerfile
 
-The pipelines expect to build, test, and push an image. Make sure there is a valid Dockerfile at the root of your project directory. 
+The pipelines expect to build, test, and push an image. Make sure there is a valid Dockerfile at the root of your project directory. It will only ever build and push the images for pushes to main (ideally after a merge request goes through).
 
 ### Gitleaks
 
