@@ -2,7 +2,7 @@
 
 This repository includes several [Github Action](https://github.com/features/actions) pipelines for different. So far, these are:
 
-- Java with Gradle
+- Java with Gradle (with SonarQube plugin)
 - Java with Maven
 - Node.js
 - Python with `requirements.txt`
