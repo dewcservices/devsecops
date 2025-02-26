@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# git automatically sets this to .git/COMMIT_EDITMSG which is where commits are stored
+INPUT_FILE=$1
+
+# get the commit string
+COMMIT_MSG=$(head -n1 $INPUT_FILE)
+
+CONVENTIONAL_COMMIT_REGEX="^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\([[:alnum:]._-]+\))?(\!)?: ([[:alnum:]])+([[:space:][:print:]]*)"
+
+# Check if the commit message matches the conventional commit pattern
+if ! echo "$COMMIT_MSG" | grep -qP "$CONVENTIONAL_COMMIT_REGEX"; then
+  echo "ERROR: Commit message does not follow the conventional commit format."
+  echo "Visit https://www.conventionalcommits.org/en/v1.0.0/ for more information."
+  exit 1
+fi
+
+# Allow the commit to proceed if the message is valid
+exit 0
