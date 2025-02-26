@@ -1,0 +1,23 @@
+# lefthook.yml - will need a separate file for each language
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: linting - language specific
+      stage_fixed: true
+    - name: conventional commits
+    - anything else from the pipelines?
+    - secrets?
+commit-msg:
+  parallel: true
+  commands:
+    lint:
+      run: a-command
+      stage_fixed: true
+post-merge:
+  parallel: true
+  files: "git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD" - is this needed?
+  commands:
+    install-dependencies:
+      glob: "{package.json}" -- what does this do
+      run: npm install - language specific
