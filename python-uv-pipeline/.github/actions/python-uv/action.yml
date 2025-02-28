@@ -78,11 +78,11 @@ runs:
         cache-local-path: "${{ steps.variable_setup.outputs.uv_home }}"
 
     - name: Set up Python
-        uses: actions/setup-python@v4
-        id: setup_python
-        with:
-          python-version: ${{ inputs.python_version }}
-          cache: uv
+      uses: actions/setup-python@v4
+      id: setup_python
+      with:
+        python-version: ${{ inputs.python_version }}
+        cache: uv
 
     - name: Install '${{ steps.variable_setup.outputs.uv_packages } } mypy ruf pytest'
       run: |
