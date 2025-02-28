@@ -1,0 +1,45 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+{
+	"name": "java-maven",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "."
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+	},
+
+	// may be needed for Podman
+	"runArgs": [
+		"--userns=keep-id",
+		"--pid=host"
+	],
+	"remoteUser": "root",
+	"containerUser": "root",
+
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+		  // Add the IDs of extensions you want installed when the container is created.
+		  "extensions": [
+			"vscjava.vscode-maven",
+			"vscjava.vscode-java-pack",
+			"vscjava.vscode-java-test",
+			"vscjava.vscode-java-dependency",
+			"SonarSource.sonarlint-vscode",
+			"AquaSecurityOfficial.trivy-vulnerability-scanner"
+		],
+		  "settings": {
+			"[java]": {
+			  "editor.formatOnSave": true,
+			  "editor.codeActionsOnSave": {
+				"source.fixAll": "explicit",
+				"source.organizeImports": "explicit"
+			  },
+			  "editor.defaultFormatter": "vscjava.vscode-maven"
+			}
+		  }
+		}
+	  }
+	  
+}

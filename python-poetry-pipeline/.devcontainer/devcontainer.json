@@ -1,0 +1,44 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/python
+{
+	"name": "python-poetry",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "."
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+	},
+
+	//may be needed for Podman
+	"runArgs": [
+		"--userns=keep-id",
+		"--pid=host"
+	],
+	"remoteUser": "root",
+	"containerUser": "root",
+
+	"customizations": {
+		"vscode": {
+		  "extensions": [
+			"ms-python.debugpy",
+			"ms-python.python",
+			"SonarSource.sonarlint-vscode",
+			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"ms-python.black-formatter",
+			"ms-python.flake8",
+			"ms-python.mypy-type-checker"
+		],
+		  "settings": {
+			"[python]": {
+			  "editor.formatOnSave": true,
+			  "editor.codeActionsOnSave": {
+				"source.fixAll": "explicit",
+				"source.organizeImports": "explicit"
+			  },
+			  "editor.defaultFormatter": "ms-python.black-formatter"
+			}
+		  }
+		}
+	  }	  
+}

@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Python run",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "",
+      "console": "integratedTerminal",
+      "purpose": [
+        "debug-in-terminal"
+      ],
+      "justMyCode": true,
+      "env": {
+      },
+    },
+  ]
+}

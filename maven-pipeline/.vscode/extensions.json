@@ -1,0 +1,21 @@
+{
+    "recommendations": [
+        // Java
+        "vscjava.vscode-maven",
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-java-test",
+        "vscjava.vscode-java-dependency",
+        // Java - extra
+        "redhat.java",
+        "Oracle.oracle-java",
+        // Docker 
+        "ms-vscode-remote.remote-containers",
+        "ms-azuretools.vscode-docker",
+        // Sonar 
+        "SonarSource.sonarlint-vscode",
+        // Github
+        "GitHub.vscode-github-actions",
+        // Trivy 
+        "AquaSecurityOfficial.trivy-vulnerability-scanner"
+    ]
+}

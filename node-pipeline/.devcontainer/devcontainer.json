@@ -1,0 +1,43 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+{
+	"name": "NodeJS",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "."
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+
+	},
+
+	// may be needed for Podman
+	"runArgs": [
+		"--userns=keep-id",
+		"--pid=host"
+	],
+	"remoteUser": "root",
+	"containerUser": "root",
+
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+		  // Add the IDs of extensions you want installed when the container is created.
+		  "extensions": [
+			"dbaeumer.vscode-eslint",
+			"SonarSource.sonarlint-vscode",
+			"AquaSecurityOfficial.trivy-vulnerability-scanner"
+		],
+		  "settings": {
+			"[typescript]": {
+			  "editor.formatOnSave": true,
+			  "editor.codeActionsOnSave": {
+				"source.fixAll": "explicit",
+				"source.organizeImports": "explicit"
+			  },
+			  "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+			}
+		  }
+		}
+	  }
+	  
+}

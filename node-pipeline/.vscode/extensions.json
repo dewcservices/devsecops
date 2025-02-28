@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        // Docker 
+        "ms-vscode-remote.remote-containers",
+        "ms-azuretools.vscode-docker",
+        // Sonar 
+        "SonarSource.sonarlint-vscode",
+        // JS lint
+        "dbaeumer.vscode-eslint",
+        // Trivy
+        "AquaSecurityOfficial.trivy-vulnerability-scanner"
+    ]
+}
