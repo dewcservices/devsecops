@@ -11,7 +11,7 @@
             "args": [
                 "install",
                 "-e",
-                ".[test]"
+                "."
             ],
             "presentation": {
                 "echo": true,

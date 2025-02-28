@@ -4,4 +4,4 @@ FROM registry.access.redhat.com/ubi9/ubi:latest
 RUN dnf install git nano python3 -y
 
 # Install nodejs for SonarQube 
-RUN dnf install nodejs
+RUN dnf install nodejs -y

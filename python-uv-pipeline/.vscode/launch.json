@@ -9,10 +9,10 @@
       "justMyCode": true
     },
     {
-      "name": "Python run",
+      "name": "Python: Run Project",
       "type": "debugpy",
       "request": "launch",
-      "module": "",
+      "program": ".",
       "console": "integratedTerminal",
       "purpose": [
         "debug-in-terminal"

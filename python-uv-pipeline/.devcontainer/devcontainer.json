@@ -40,6 +40,6 @@
 		}
 	  },
 
-	// "postCreateCommand": [ "uv", "pip", "install", "--cache-dir", ".cache", "--verbose", ".[test]" ]
+	"postCreateCommand": [ "uv", "venv" ]
 	  
 }

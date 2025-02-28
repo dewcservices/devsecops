@@ -9,4 +9,4 @@ RUN source $HOME/.local/bin/env && uv python install
 ENV PYTHONUNBUFFERED 1
 
 # Install nodejs for SonarQube 
-RUN dnf install nodejs
+RUN dnf install nodejs -y

@@ -10,7 +10,6 @@
             },
             "args": [
                 "install",
-                ".[test]"
             ],
             "presentation": {
                 "echo": true,
