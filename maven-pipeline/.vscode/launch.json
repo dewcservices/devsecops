@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch",
+        "type": "maven",
+        "request": "launch",
+        "args": ["test"],
+        "cwd": "${workspaceRoot}",
+        "workingDirectory": "${workspaceRoot}",
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Build",
+        "type": "maven",
+        "request": "launch",
+        "args": ["clean", "package"],
+        "cwd": "${workspaceRoot}",
+        "workingDirectory": "${workspaceRoot}",
+        "console": "integratedTerminal"
+      }
+    ]
+  }

@@ -12,7 +12,7 @@
       "name": "Python: Run Project",
       "type": "debugpy",
       "request": "launch",
-      "program": ".",
+      "program": "${workspaceFolder}",
       "console": "integratedTerminal",
       "purpose": [
         "debug-in-terminal"

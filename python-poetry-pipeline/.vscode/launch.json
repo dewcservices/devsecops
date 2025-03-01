@@ -1,7 +1,7 @@
 {
   "configurations": [
     {
-      "name": "Python: Current File",
+      "name": "Run Current File",
       "type": "debugpy",
       "request": "launch",
       "program": "${file}",
@@ -9,7 +9,7 @@
       "justMyCode": true
     },
     {
-      "name": "Python: Run Project",
+      "name": "Run Project",
       "type": "debugpy",
       "request": "launch",
       "program": ".",

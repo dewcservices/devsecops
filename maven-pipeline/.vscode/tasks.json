@@ -4,13 +4,18 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "verify",
+            "label": "Verify",
             "type": "shell",
             "command": "mvn -B verify",
             "group": "build"
         },
         {
-            "label": "test",
+            "label": "Build",
+            "type": "shell",
+            "command": "mvn clean package",
+        },
+        {
+            "label": "Test",
             "type": "shell",
             "command": "mvn -B test",
             "group": "test"

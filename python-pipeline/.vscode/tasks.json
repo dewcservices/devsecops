@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Project install",
+            "label": "Project Install",
             "command": "pip",
             "group": {
                 "kind": "build",
