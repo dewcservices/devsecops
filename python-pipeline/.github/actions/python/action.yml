@@ -59,7 +59,7 @@ runs:
         GITLEAKS_LICENSE: ${{ inputs.gitleaks_token }}
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       id: setup_python
       with:
         python-version: ${{ inputs.python_version }}
@@ -124,7 +124,7 @@ runs:
       shell: bash
 
     - name: Build Docker image for testing
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         load: true
         tags: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
@@ -222,7 +222,7 @@ runs:
         
     - name: Build and push image
       if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' }}
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
