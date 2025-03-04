@@ -1,6 +1,6 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 {
-	"name": "java-gradle",
+	"name": "java-gradle-devcontainer",
 	"build": {
 		"dockerfile": "Dockerfile",
 		"context": "."
