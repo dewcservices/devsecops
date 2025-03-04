@@ -80,7 +80,7 @@ runs:
 
     - name: Sonarcloud SAST
       if: ${{ inputs.sonar_token != '' }}
-      uses: sonarsource/sonarcloud-github-action@master
+      uses: SonarSource/sonarqube-scan-action@v5.0.0
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
         SONAR_TOKEN: ${{ inputs.sonar_token }}
