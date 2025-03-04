@@ -96,7 +96,7 @@ runs:
       with:
         image-ref: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
         format: template
-        template: "@/github/workspace/.github/actions/gradle/trivy.tpl"
+        template: ".github/actions/gradle/trivy.tpl"
         output: trivy-high-critical.md
         ignore-unfixed: true
         vuln-type: 'os,library'
