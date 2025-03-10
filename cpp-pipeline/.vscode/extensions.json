@@ -1,0 +1,20 @@
+{
+    "recommendations": [
+        // c++
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.cpptools-themes",
+        // Qt C++
+        "TheQtCompany.qt-cpp",
+        // Docker 
+        "ms-vscode-remote.remote-containers",
+        "ms-azuretools.vscode-docker",
+        // Sonar 
+        "SonarSource.sonarlint-vscode",
+        // Trivy
+        "AquaSecurityOfficial.trivy-vulnerability-scanner",
+        // Github
+        "GitHub.vscode-github-actions",
+    ]
+}

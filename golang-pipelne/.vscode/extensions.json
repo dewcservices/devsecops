@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        // Golang
+        "golang.Go",
+        // Docker 
+        "ms-vscode-remote.remote-containers",
+        "ms-azuretools.vscode-docker",
+        // Sonar 
+        "SonarSource.sonarlint-vscode",
+        // Trivy
+        "AquaSecurityOfficial.trivy-vulnerability-scanner",
+        // Github
+        "GitHub.vscode-github-actions",
+    ]
+}

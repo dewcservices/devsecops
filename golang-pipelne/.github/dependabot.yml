@@ -11,13 +11,10 @@ updates:
       interval: "weekly"
   - package-ecosystem: "docker"
     directories:
-      - "/gradle-pipeline/"
-      - "/maven-pipeline/"
-      - "/node-pipeline/"
-      - "/python-pipeline/"
-      - "/python-poetry-pipeline/"
-      - "/python-uv-pipeline/"
-      - "/cplusplus-pipeline/"
-      - "/golang-pipelne/"
+      - "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/" #change if app dir is not root
     schedule:
       interval: "weekly"
