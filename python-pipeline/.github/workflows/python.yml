@@ -9,7 +9,7 @@ env:
   PYTHON_APP_SOURCE_DIR: ""
   PYTEST_COVERAGE_XML_FILE_NAME: "coverage-reports/coverage-pytest.xml"
   PYTEST_COVERAGE_THRESHOLD_PERCENT: 50
-
+  
 jobs:
   build:
     runs-on: ubuntu-latest

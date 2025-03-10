@@ -6,6 +6,7 @@ env:
   DOCKER_IMAGE_NAME: ""
   SONAR_ORGANIZATION: ""
   SONAR_PROJECT_KEY: ""
+  NODEJS_APP_SOURCE_DIR: "."
 
 jobs:
   build:
@@ -32,3 +33,4 @@ jobs:
         docker_image_name: ${{ env.DOCKER_IMAGE_NAME }}
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+        source_dir: ${{ env.NODEJS_APP_SOURCE_DIR }}

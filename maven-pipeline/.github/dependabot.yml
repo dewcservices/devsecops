@@ -11,11 +11,10 @@ updates:
       interval: "weekly"
   - package-ecosystem: "docker"
     directories:
-      - ".devcontainer"
       - "/"
     schedule:
       interval: "weekly"
   - package-ecosystem: "maven"
-    directory: "/" 
+    directory: "/" #change if app dir is not root
     schedule:
       interval: "weekly"

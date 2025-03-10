@@ -26,6 +26,11 @@ inputs:
   dockerhub_token:
     description: 'Dockerhub Token'
     required: false
+  source_dir:
+    description: 'Source directory for the Gradle application'
+    required: true
+    default: '.'
+
 
 runs:
   using: 'composite'
@@ -59,16 +64,16 @@ runs:
       uses: gradle/actions/setup-gradle@v3
 
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ${{ inputs.source_dir }}/gradlew build
       shell: bash
 
     - name: Run tests
-      run: ./gradlew test
+      run: ${{ inputs.source_dir }}/gradlew test
       shell: bash
 
     - name: Sonarcloud SAST
       if: ${{ inputs.sonar_token != '' }}
-      run: ./gradlew sonar --init-script ./.github/actions/gradle/sonar-init.gradle -Dsonar.token=${{ inputs.sonar_token }} ${{ inputs.sonar_args }}
+      run: ${{ inputs.source_dir }}/gradlew sonar --init-script ./.github/actions/gradle/sonar-init.gradle -Dsonar.token=${{ inputs.sonar_token }} ${{ inputs.sonar_args }}
       shell: bash
 
     - name: Add QEMU support

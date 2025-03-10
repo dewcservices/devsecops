@@ -26,6 +26,10 @@ inputs:
   dockerhub_token:
     description: 'Dockerhub Token'
     required: false
+  source_dir:
+    description: 'Source directory for the Maven application'
+    required: true
+    default: '.'
 
 runs:
   using: 'composite'
@@ -58,16 +62,19 @@ runs:
     - name: Build with Maven
       run: mvn clean install -DskipTests
       shell: bash
+      working-directory: ${{ inputs.source_dir }}
 
     - name: Run maven tests
       run: mvn org.apache.maven.plugins:maven-surefire-plugin:test
       shell: bash
+      working-directory: ${{ inputs.source_dir }}
 
     - name: Sonarcloud SAST
       if: ${{ inputs.sonar_token != '' }}
       run: |
         mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:4.0.0.4121:sonar -Dsonar.token=${{ inputs.sonar_token }} ${{ inputs.sonar_args }}
       shell: bash
+      working-directory: ${{ inputs.source_dir }}
 
     - name: Add QEMU support
       uses: docker/setup-qemu-action@v3
