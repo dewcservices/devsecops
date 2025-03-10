@@ -8,6 +8,16 @@ dnf install nodejs -y; \
 # clear cache
 rm -rf /var/cache
 
+# Install Trivy 
+RUN <<EOF cat >> /etc/yum.repos.d/trivy.repo
+[trivy]
+name=Trivy repository
+baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
+EOF
+RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
 
 # OPTIONAL DEPLOYMENT EXAMPLE:
 #-----------------------------

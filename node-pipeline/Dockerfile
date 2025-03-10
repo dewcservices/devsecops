@@ -15,6 +15,17 @@ RUN export NVM_DIR="$HOME/.nvm"; \
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
 nvm install 23
 
+# Install Trivy 
+RUN <<EOF cat >> /etc/yum.repos.d/trivy.repo
+[trivy]
+name=Trivy repository
+baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
+EOF
+RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
+
 # OPTIONAL DEPLOYMENT EXAMPLE:
 #-----------------------------
 ## Make App folder, copy project into container

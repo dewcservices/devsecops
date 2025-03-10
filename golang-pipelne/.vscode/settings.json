@@ -8,5 +8,6 @@
             "label": "Compose Up",
             "template": "${composeCommand} ${configurationFile} up ${detached} ${build}"
         }
-    ]
+    ],
+    "trivy.offlineScan": true
 }

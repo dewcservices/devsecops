@@ -9,5 +9,6 @@
             "template": "${composeCommand} ${configurationFile} up ${detached} ${build}"
         }
     ],
-    "workbench.tree.indent": 14
+    "workbench.tree.indent": 14,
+    "trivy.offlineScan": true
 }

@@ -8,6 +8,18 @@ dnf install nodejs -y; \
 # clear cache
 rm -rf /var/cache
 
+# Install Trivy 
+RUN <<EOF cat >> /etc/yum.repos.d/trivy.repo
+[trivy]
+name=Trivy repository
+baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
+EOF
+RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
+
+
 # OPTIONAL DEPLOYMENT EXAMPLE:
 #-----------------------------
 
@@ -15,7 +27,7 @@ rm -rf /var/cache
 # RUN wget https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.5/bin/apache-tomcat-11.0.5.tar.gz
 # RUN tar xvf apache-tomcat-*.tar.gz
 # RUN mv apache-tomcat-11.0.5 /usr/local/tomcat11/
-# RUN cat << 'EOF' >> /usr/local/tomcat11/conf/tomcat-users.xml
+# RUN <<EOF cat >> /usr/local/tomcat11/conf/tomcat-users.xml
 #   <tomcat-users>
 #       <role rolename="manager-gui"/>
 #       <role rolename="admin-gui"/>
