@@ -13,10 +13,15 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 RUN source $HOME/.local/bin/env && uv python install
 ENV PYTHONUNBUFFERED 1
 
+# OPTIONAL DEPLOYMENT EXAMPLE:
+#-----------------------------
+## Make App folder, copy project into container
+# WORKDIR /app
+# COPY . .
 
+## Install project requirements, build project
+# RUN uv pip install .  
 
-# Install project 
-# RUN uv pip install ./projectName  
-
-# Run project 
+## Expose port and run app
+# EXPOSE 8080
 # ENTRYPOINT [ "uv", "run", "--frozen", "gunicorn", "projectName" ]

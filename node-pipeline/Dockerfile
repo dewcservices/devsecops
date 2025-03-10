@@ -15,10 +15,16 @@ RUN export NVM_DIR="$HOME/.nvm"; \
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
 nvm install 23
 
-# Build package 
-#WORKDIR ./projectName 
-#ng build --watch
+# OPTIONAL DEPLOYMENT EXAMPLE:
+#-----------------------------
+## Make App folder, copy project into container
+# WORKDIR /app
+# COPY . .
 
-# Run package 
-#npm install lite-server --save-dev
-#ENTRYPOINT [ "lite-server", "--baseDir='dist/projectName' ]"
+## Install project requirements, build project
+# RUN npm install lite-server --save-dev
+# RUN npm build --prod
+
+## Expose port and run app
+# EXPOSE 8080
+# CMD [ "lite-server --baseDir='dist/*/'"  ]

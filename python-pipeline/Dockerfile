@@ -8,8 +8,16 @@ dnf install nodejs -y; \
 # clear cache
 rm -rf /var/cache
 
-# Install project 
-# RUN pip3 install ./projectName/  
 
-# Run project 
+# OPTIONAL DEPLOYMENT EXAMPLE:
+#-----------------------------
+## Make App folder, copy project into container
+# WORKDIR /app
+# COPY . .
+
+## Install project requirements, build project
+# RUN pip3 install .  
+
+## Expose port and run app
+# EXPOSE 8080
 # ENTRYPOINT [ "gunicorn", "projectname" ]

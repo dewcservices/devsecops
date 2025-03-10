@@ -11,8 +11,15 @@ rm -rf /var/cache
 # install poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
-# Install project 
-# RUN poetry add ./projectName
+# OPTIONAL DEPLOYMENT EXAMPLE:
+#-----------------------------
+## Make App folder, copy project into container
+# WORKDIR /app
+# COPY . .
 
-# Run project 
+## Install project requirements, build project
+# RUN poetry add .
+
+## Expose port and run app
+# EXPOSE 8080
 # ENTRYPOINT [ "poetry", "run", "gunicorn", "projectname" ]
