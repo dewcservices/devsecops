@@ -8,6 +8,10 @@ inputs:
   gitleaks_token:
     description: 'Organisational token for Gitleaks'
     required: false # only required for Organizations, not personal accounts
+  source_dir:
+    description: 'Source directory for the Golang application'
+    required: true
+    default: "."
   sonar_token:
     description: 'Token for SonarCloud access'
     required: true
@@ -56,15 +60,15 @@ runs:
         go-version: ${{ inputs.golang_version }}
 
     - name: Install Package dependencies
-      run: go mod download -v ./...
+      run: go mod download -v ${{ inputs.source_dir }}/...
       shell: bash
 
     - name: Build Package
-      run: go build -v ./...
+      run: go build -v ${{ inputs.source_dir }}/...
       shell: bash
 
     - name: Test
-      run: go test -json -coverprofile=cover.out ./... > result.json
+      run: go test -json -coverprofile=cover.out ${{ inputs.source_dir }}/... > result.json
       shell: bash
 
     - name: SonarCloud Scan

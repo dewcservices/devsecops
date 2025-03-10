@@ -8,6 +8,10 @@ inputs:
   gitleaks_token:
     description: 'Organisational token for Gitleaks'
     required: false # only required for Organizations, not personal accounts
+  source_dir:
+    description: 'Source directory for the c++ application'
+    required: true
+    default: "."
   sonar_token:
     description: 'Token for SonarCloud access'
     required: true
@@ -55,7 +59,7 @@ runs:
       shell: bash
 
     - name: Configure CMake
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G "${{ input.build_system }}"
+      run: cmake -S ${{ inputs.source_dir }} -B build -DCMAKE_BUILD_TYPE=Release -G "${{ input.build_system }}"
 
     - name: Build
       run: |
