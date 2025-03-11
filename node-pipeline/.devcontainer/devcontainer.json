@@ -9,7 +9,7 @@
 		"ghcr.io/devcontainers/features/common-utils:2": {}
 	},
 	// uncomment if the app/source directory is in a sub folder
-	// "workspaceMount": "source=${localWorkspaceFolder}/,my-app,target=/workspace,type=bind",
+	// "workspaceMount": "source=${localWorkspaceFolder}/myApp,target=/workspace,type=bind",
 	// "workspaceFolder": "/workspace",
 
 	// may be needed for Podman
@@ -26,6 +26,7 @@
 		  // Add the IDs of extensions you want installed when the container is created.
 		  "extensions": [
 			"dbaeumer.vscode-eslint",
+			"ms-vscode.vscode-typescript-next",
 			"SonarSource.sonarlint-vscode",
 			"AquaSecurityOfficial.trivy-vulnerability-scanner"
 		],
@@ -36,7 +37,7 @@
 				"source.fixAll": "explicit",
 				"source.organizeImports": "explicit"
 			  },
-			  "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+			  "editor.defaultFormatter": "ms-vscode.vscode-typescript-next"
 			}
 		  }
 		}

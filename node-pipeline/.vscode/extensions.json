@@ -5,8 +5,12 @@
         "ms-azuretools.vscode-docker",
         // Sonar 
         "SonarSource.sonarlint-vscode",
-        // JS lint
+        // Angular , VUE
+        "Angular.ng-template",
+        "Vue.volar",
+        // JS and TS lint
         "dbaeumer.vscode-eslint",
+        "ms-vscode.vscode-typescript-next",
         // Trivy
         "AquaSecurityOfficial.trivy-vulnerability-scanner"
     ]
