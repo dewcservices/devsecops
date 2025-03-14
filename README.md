@@ -10,6 +10,7 @@ This repository includes several [Github Action](https://github.com/features/act
 - Python with [uv](https://docs.astral.sh/uv/)
 - Golang 
 - C++
+- Rust
 
 ## Requirements
 

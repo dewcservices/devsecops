@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        // Rust
+        "rust-lang.rust-analyzer",
+        "ms-vscode.anycode-rust",
+        // Docker 
+        "ms-vscode-remote.remote-containers",
+        "ms-azuretools.vscode-docker",
+        // Sonar 
+        "SonarSource.sonarlint-vscode",
+        // Trivy
+        "AquaSecurityOfficial.trivy-vulnerability-scanner",
+        // Github
+        "GitHub.vscode-github-actions",
+    ]
+}

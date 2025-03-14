@@ -29,7 +29,7 @@ jobs:
       uses: wagoid/commitlint-github-action@v6
 
     - name: Run Custom Python uv CI action
-      uses: ./.github/actions/python-uv/
+      uses: ./.github/actions/python-poetry/
       with: 
         pytest_coverage_xml_file_name: ${{ env.PYTEST_COVERAGE_XML_FILE_NAME }}
         source_dir: ${{ env.PYTHON_APP_SOURCE_DIR }}

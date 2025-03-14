@@ -1,0 +1,46 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// https://github.com/devcontainers/templates/tree/main/src/python
+{
+	"name": "rust",
+	"build": {
+		"dockerfile": "../Dockerfile",
+		"context": "../"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+	},
+	// uncomment if the app/source directory is in a sub folder
+	// "workspaceMount": "source=${localWorkspaceFolder}/myApp,target=/workspace,type=bind",
+	// "workspaceFolder": "/workspace",
+
+	//may be needed for Podman
+	"runArgs": [
+		"--userns=keep-id",
+		"--pid=host"
+	],
+	"remoteUser": "root",
+	"containerUser": "root",
+
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+		  "extensions": [
+			"rust-lang.rust-analyzer",
+			"SonarSource.sonarlint-vscode",
+			"AquaSecurityOfficial.trivy-vulnerability-scanner"
+		],
+		  "settings": {
+			"[rust]": {
+			  "editor.formatOnSave": true,
+			  "editor.codeActionsOnSave": {
+				"source.fixAll": "explicit",
+				"source.organizeImports": "explicit"
+			  },
+			  "editor.defaultFormatter": "rust-lang.rust-analyzer"
+			}
+		  }
+		}
+	  },
+	  //"postAttachCommand": "cargo new hello_world"
+  
+}
