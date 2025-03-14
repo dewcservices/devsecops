@@ -8,10 +8,6 @@ inputs:
   gitleaks_token:
     description: 'Organisational token for Gitleaks'
     required: false # only required for Organizations, not personal accounts
-  source_dir:
-    description: 'Source directory for the Golang application'
-    required: true
-    default: "."
   sonar_token:
     description: 'Token for SonarCloud access'
     required: true
@@ -54,7 +50,7 @@ runs:
       run: cargo build --profile release --verbose --workspace
     
     - name: Run tests in release mode
-      run: cargo test --profile release --verbose cargo test 
+      run: cargo test --profile release --verbose --workspace
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarqube-scan-action@v5.0.0

@@ -1,6 +1,6 @@
 name: Angular CI Workflow
 
-on: [push, pull_request]
+on: [push]
 
 env:
   DOCKER_IMAGE_NAME: ""
@@ -30,7 +30,7 @@ jobs:
         sonar_args: >
           -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
           -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-        docker_image_name: ${{ env.DOCKER_IMAGE_NAME }}
+        docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
         source_dir: ${{ env.NODEJS_APP_SOURCE_DIR }}

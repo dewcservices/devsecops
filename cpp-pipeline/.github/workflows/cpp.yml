@@ -1,6 +1,6 @@
 name: CPP CI Pipeline
 
-on: [push, pull_request]
+on: [push]
 
 env:
   DOCKER_IMAGE_NAME: ""
@@ -37,5 +37,5 @@ jobs:
           -D sonar.sources=${{ env.PYTHON_APP_SOURCE_DIR }}
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
-        docker_image_name: ${{ env.DOCKER_IMAGE_NAME }}
+        docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
         build_system: ${{env.BUILD_SYSTEM}}

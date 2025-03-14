@@ -1,6 +1,6 @@
 name: Python CI Pipeline
 
-on: [push, pull_request]
+on: [push]
 
 env:
   DOCKER_IMAGE_NAME: ""
@@ -29,7 +29,7 @@ jobs:
       uses: wagoid/commitlint-github-action@v6
 
     - name: Run Custom Python uv CI action
-      uses: ./.github/actions/python-poetry/
+      uses: ./.github/actions/python-uv
       with: 
         pytest_coverage_xml_file_name: ${{ env.PYTEST_COVERAGE_XML_FILE_NAME }}
         source_dir: ${{ env.PYTHON_APP_SOURCE_DIR }}
@@ -45,5 +45,5 @@ jobs:
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
         build_context: ${{ env.PYTHON_APP_SOURCE_DIR }}
-        docker_image_name: ${{ env.DOCKER_IMAGE_NAME }}
+        docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
         pytest_coverage_threshold_percent: ${{ env.PYTEST_COVERAGE_THRESHOLD_PERCENT }}
