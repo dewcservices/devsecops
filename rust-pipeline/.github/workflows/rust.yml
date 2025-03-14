@@ -1,4 +1,4 @@
-name: Golang CI Pipeline
+name: Rust CI Pipeline
 
 on: [push, pull_request]
 
@@ -23,7 +23,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Run Custom Golang CI action
+    - name: Run Custom Rust CI action
       uses: ./.github/actions/rust/
       with: 
         github_token: ${{ secrets.GITHUB_TOKEN }}

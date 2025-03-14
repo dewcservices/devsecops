@@ -1,4 +1,4 @@
-name: Golang CI
+name: Rust CI
 description: 'Builds, tests, and pushes a Python image using a requirements.txt for dependency installation'
 
 inputs:

@@ -17,6 +17,8 @@
 	"runArgs": [
 		"--userns=keep-id",
 		"--pid=host"
+		//"--device=nvidia.com/gpu=all" // may need this for Nvidia GPU passthrough
+		//"--device=/dev/kfd", "--device=/dev/dri", "--security-opt=no-new-privileges", "--cap-drop=ALL" // may need this for AMD GPU passthrough
 	],
 	"remoteUser": "root",
 	"containerUser": "root",
