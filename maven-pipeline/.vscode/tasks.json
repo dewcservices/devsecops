@@ -6,18 +6,27 @@
         {
             "label": "Verify",
             "type": "shell",
-            "command": "mvn -B verify",
+            "command": "mvn -B --update-snapshots verify",
             "group": "build"
         },
         {
             "label": "Build",
             "type": "shell",
-            "command": "mvn clean package",
+            "command": "mvn --batch-mode clean package",
+            "problemMatcher": [
+                "$jshint"
+            ]
         },
         {
             "label": "Test",
             "type": "shell",
             "command": "mvn -B test",
+            "group": "test"
+        },
+        {
+            "label": "Update",
+            "type": "shell",
+            "command": "mvn --batch-mode clean install -U",
             "group": "test"
         }
     ]

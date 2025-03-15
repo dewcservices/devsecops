@@ -9,5 +9,6 @@
             "template": "${composeCommand} ${configurationFile} up ${detached} ${build}"
         }
     ],
-    "trivy.offlineScan": true
+    "trivy.offlineScan": true,
+    "java.configuration.updateBuildConfiguration": "automatic"
 }

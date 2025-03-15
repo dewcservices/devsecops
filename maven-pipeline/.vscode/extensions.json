@@ -8,6 +8,8 @@
         // Java - extra
         "redhat.java",
         "Oracle.oracle-java",
+        //xml
+        "redhat.vscode-xml",
         // Docker 
         "ms-vscode-remote.remote-containers",
         "ms-azuretools.vscode-docker",
