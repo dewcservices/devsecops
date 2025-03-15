@@ -40,7 +40,6 @@ runs:
       shell: bash
       run: echo "current_branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
 
-
     - name: Checkout code
       uses: actions/checkout@v4
       with:
@@ -60,7 +59,6 @@ runs:
       with:
         distribution: 'temurin'
         java-version: ${{ inputs.java_version }}
-        cache: gradle
 
     - name: Setup gradle
       uses: gradle/actions/setup-gradle@v3

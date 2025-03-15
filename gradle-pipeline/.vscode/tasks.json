@@ -6,22 +6,46 @@
         {
             "label": "Build",
             "type": "shell",
-            "command": "gradlew",
-            "args": ["build"],
-            "group": "build"
+            "command": "./gradlew",
+            "args": [
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gradle"
+            ]
         },
         {
             "label": "Run",
             "type": "shell",
-            "command": "gradlew",
-            "args": ["run"],
-            "group": "test"
+            "command": "./gradlew",
+            "args": [
+                "run"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "problemMatcher": [
+                "$gradle"
+            ]
         },
         {
             "label": "Clean",
             "type": "shell",
-            "command": "gradlew",
-            "args": ["clean"],
+            "command": "./gradlew",
+            "args": [
+                "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gradle"
+            ]
         }
     ]
 }
