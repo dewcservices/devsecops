@@ -1,8 +1,11 @@
-cmake_minimum_required(VERSION 3.13)  
-project(example)               
+cmake_minimum_required(VERSION 3.10.0)
+project(cpp-template VERSION 0.1.0 LANGUAGES C CXX)
+
+add_executable(cpp-template main.cpp)
 
 include(CTest)
 enable_testing()
 
-add_executable(example main.cpp)
-set_property(TARGET example PROPERTY CMAKE_CXX_STANDARD 14 )
+set_property(TARGET cpp-template PROPERTY CXX_STANDARD 23)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

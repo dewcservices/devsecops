@@ -25,7 +25,7 @@
 		// Configure properties specific to VS Code.
 		"vscode": {
 		  "extensions": [
-			"ms-vscode.cpptools",
+			"ms-vscode.cpptools-extension-pack",
 			"SonarSource.sonarlint-vscode",
 			"AquaSecurityOfficial.trivy-vulnerability-scanner",
 		],

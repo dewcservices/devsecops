@@ -34,7 +34,7 @@ jobs:
         sonar_args: >
           -D sonar.organization=${{ env.SONAR_ORGANIZATION }}
           -D sonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-          -D sonar.sources=${{ env.PYTHON_APP_SOURCE_DIR }}
+          -D sonar.sources=${{ env.PROJECT_DIR }}
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
         docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}

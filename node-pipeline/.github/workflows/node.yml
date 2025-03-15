@@ -30,6 +30,7 @@ jobs:
         sonar_args: >
           -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
           -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+          -D sonar.sources=${{ env.NODEJS_APP_SOURCE_DIR }}
         docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}

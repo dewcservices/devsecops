@@ -59,7 +59,8 @@ runs:
       shell: bash
 
     - name: Configure CMake
-      run: cmake -S ${{ inputs.source_dir }} -B build -DCMAKE_BUILD_TYPE=Release -G "${{ input.build_system }}"
+      run: cmake -S ${{ inputs.source_dir }} -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Release -G "${{ inputs.build_system }}"
+      shell: bash
 
     - name: Build
       run: |
