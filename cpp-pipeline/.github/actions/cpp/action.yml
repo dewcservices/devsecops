@@ -35,9 +35,10 @@ runs:
   using: 'composite'
   steps:
 
-    - name: Get branch names.
+    - name: Extract branch name
       id: branch-names
-      uses: tj-actions/branch-names@v8
+      shell: bash
+      run: echo "current_branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
 
     - name: Checkout code
       uses: actions/checkout@v4
