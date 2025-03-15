@@ -27,6 +27,9 @@ inputs:
   docker_image_name:
     description: 'Docker image name'
     required: true
+  golang_packages:
+    description: 'Extra Golang dependencies to install'
+    required: true
   golang_version:
     description: 'Golang Version'
     required: true
@@ -40,7 +43,6 @@ runs:
       id: branch-names
       shell: bash
       run: echo "current_branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -62,7 +64,12 @@ runs:
         go-version: ${{ inputs.golang_version }}
 
     - name: Install Package dependencies
-      run: go mod download -v ${{ inputs.source_dir }}/...
+      run: go get ${{ inputs.source_dir }}
+      shell: bash
+
+    - name: Install input Package dependencies
+      if:  ${{ inputs.job-golang_packages != '' }}
+      run: go get ${{ inputs.golang_packages }}
       shell: bash
 
     - name: Build Package

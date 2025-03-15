@@ -2,7 +2,7 @@ FROM registry.access.redhat.com/ubi9/ubi:latest
 
 RUN dnf update -y; \
 # Install git, nano & golang
-dnf install git nano golang -y; \
+dnf install git nano delve golang golang-docs golang-tests -y; \
 # Install nodejs for SonarQube 
 dnf install nodejs -y; \
 # clear cache
