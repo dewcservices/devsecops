@@ -3,6 +3,8 @@
         // Docker 
         "ms-vscode-remote.remote-containers",
         "ms-azuretools.vscode-docker",
+        //firefox
+        "firefox-devtools.vscode-firefox-debug",
         // Sonar 
         "SonarSource.sonarlint-vscode",
         // Angular , VUE

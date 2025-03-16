@@ -8,9 +8,6 @@ inputs:
   gitleaks_token:
     description: 'Organisational token for Gitleaks'
     required: false # only required for Organizations, not personal accounts
-  node_version:
-    description: 'Node Version'
-    required: false
   sonar_token:
     description: 'Token for SonarCloud access'
     required: false
@@ -70,7 +67,7 @@ runs:
     - name: Install Node
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ inputs.node_version }}
+        node-version-file: '.nvmrc'
 
     - name: Install dependencies
       run: npm ci

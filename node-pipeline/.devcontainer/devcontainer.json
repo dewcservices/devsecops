@@ -28,7 +28,9 @@
 			"dbaeumer.vscode-eslint",
 			"ms-vscode.vscode-typescript-next",
 			"SonarSource.sonarlint-vscode",
-			"AquaSecurityOfficial.trivy-vulnerability-scanner"
+			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"firefox-devtools.vscode-firefox-debug",
+			"Angular.ng-template"
 		],
 		  "settings": {
 			"[typescript]": {

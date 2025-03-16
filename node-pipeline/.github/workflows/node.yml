@@ -25,7 +25,6 @@ jobs:
       uses: ./.github/actions/node
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        node_version: "lts/*"
         sonar_token: ${{ secrets.SONAR_TOKEN }}
         sonar_args: >
           -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}

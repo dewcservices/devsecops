@@ -3,19 +3,28 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "ng serve",
-      "type": "msedge",
+      "command": "npm start",
+      "name": "npm start",
       "request": "launch",
-      "preLaunchTask": "npm: start",
-      "url": "http://localhost:4200/"
+      "type": "node-terminal"
     },
     {
-      "name": "ng test",
-      "type": "msedge",
+      "type": "firefox",
       "request": "launch",
+      "reAttach": true,
+      "name": "ng test",
+      "url": "http://localhost:9876/",
       "preLaunchTask": "npm: test",
-      "url": "http://localhost:9876/debug.html"
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "name": "ng start with firefox",
+      "url": "http://localhost:4200/",
+      "preLaunchTask": "npm: start",
+      "webRoot": "http://localhost:4200/"
     }
-   
   ]
 }
