@@ -56,7 +56,6 @@ runs:
       shell: bash
       run: echo "current_branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
 
-
     - name: Checkout code
       uses: actions/checkout@v4
       with:
@@ -112,7 +111,7 @@ runs:
       uses: actions/setup-python@v5
       id: setup_python
       with:
-        python-version: ${{ inputs.python_version }}
+        python-version-file: ".python-version"
         cache: poetry
 
     - name: Poetry config
@@ -169,13 +168,13 @@ runs:
     - name: Type Check with Mypy
       shell: bash
       run: |
-        mypy ${{ inputs.source_dir }}
+        poetry run mypy ${{ inputs.source_dir }}
 
     - name: Security Lint with Bandit
       shell: bash
       run: |
         # bandit - log level low, critical issues only. Reports only if high confidence
-        bandit -ll -ii -r . -x ./.venv
+        poetry run bandit -ll -ii -r . -x ./.venv
 
 
     - name: Override Coverage Source Path for Sonar

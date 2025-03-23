@@ -10,6 +10,8 @@ rm -rf /var/cache
 
 # install poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PYTHONUNBUFFERED=1
+
 
 # Install Trivy 
 # Might need to comment out if devcontainer issues
@@ -30,8 +32,12 @@ RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
 # COPY . .
 
 ## Install project requirements, build project
-# RUN poetry add .
+# RUN poetry python install $(cat .python-version)
+# RUN poetry install
 
 ## Expose port and run app
 # EXPOSE 8080
-# ENTRYPOINT [ "poetry", "run", "gunicorn", "projectname" ]
+# ENTRYPOINT [ "poetry", "run", "fastapi", "run", "src/python_template/main.py", "--port", "8080", "--workers", "4" "--host", "0.0.0.0"]
+
+# for gunicorn (Flask)
+# CMD [ "GUNICORN_CMD_ARGS='--bind=0.0.0.0:8080 --workers=8'", "poetry", "run", "--frozen", "gunicorn", "'src/python_template/main.py:gunicorn()'" ]

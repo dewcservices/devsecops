@@ -16,6 +16,22 @@
                 "panel": "shared",
                 "focus": true
             },
+        },
+        {
+            "label": "Poetry update",
+            "command": "poetry",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "args": [
+                "update",
+            ],
+            "presentation": {
+                "echo": true,
+                "panel": "shared",
+                "focus": true
+            },
         }
     ]
 }
