@@ -1,8 +1,8 @@
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
 RUN dnf update -y; \
-# Install git, nano 
-dnf install git nano -y; \
+# Install git, nano, gcc, gcc++
+dnf install git nano gcc gcc-c++ -y; \
 # Install nodejs for SonarQube 
 dnf install nodejs -y; \
 # clear cache
@@ -13,6 +13,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN . $HOME/.cargo/env && rustup default stable
 
 # Install Trivy 
+# Might need to comment out if devcontainer issues
 RUN <<EOF cat >> /etc/yum.repos.d/trivy.repo
 [trivy]
 name=Trivy repository

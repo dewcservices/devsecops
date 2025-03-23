@@ -9,6 +9,7 @@ env:
   PYTHON_APP_SOURCE_DIR: "."
   PYTEST_COVERAGE_XML_FILE_NAME: "coverage-reports/coverage-pytest.xml"
   PYTEST_COVERAGE_THRESHOLD_PERCENT: 50
+  UV_SYSTEM_PYTHON: 1
 
 jobs:
   build:
@@ -44,6 +45,5 @@ jobs:
           -D sonar.sources=${{ env.PYTHON_APP_SOURCE_DIR }}
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
-        build_context: ${{ env.PYTHON_APP_SOURCE_DIR }}
         docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
         pytest_coverage_threshold_percent: ${{ env.PYTEST_COVERAGE_THRESHOLD_PERCENT }}

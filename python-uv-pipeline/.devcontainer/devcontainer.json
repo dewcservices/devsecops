@@ -28,7 +28,8 @@
 			"ms-python.python",
 			"charliermarsh.ruff",
 			"SonarSource.sonarlint-vscode",
-			"AquaSecurityOfficial.trivy-vulnerability-scanner"
+			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"ms-python.mypy-type-checker"
 		],
 		  "settings": {
 			"[python]": {

@@ -9,6 +9,7 @@ dnf install nodejs -y; \
 rm -rf /var/cache
 
 # Install Trivy 
+# Might need to comment out if devcontainer issues
 RUN <<EOF cat >> /etc/yum.repos.d/trivy.repo
 [trivy]
 name=Trivy repository

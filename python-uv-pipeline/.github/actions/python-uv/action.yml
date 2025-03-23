@@ -26,10 +26,6 @@ inputs:
   source_dir:
     description: 'Source directory for the python application'
     required: true
-  python_version:
-    description: 'Required Python version'
-    required: false
-    default: "3.12"
   pytest_coverage_xml_file_name:
     description: 'PyTest coverage report path'
     required: false
@@ -39,9 +35,12 @@ inputs:
     required: false
     default: 50
   uv_packages:
-    description: 'Additional packages to install independantly using uv'
+    description: 'Additional uv tool packages to install independently using uv'
     required: false
     default: ''
+
+env:
+  UV_SYSTEM_PYTHON: 1
 
 runs:
   using: 'composite'
@@ -51,7 +50,6 @@ runs:
       id: branch-names
       shell: bash
       run: echo "current_branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -67,49 +65,25 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
         GITLEAKS_LICENSE: ${{ inputs.gitleaks_token }}
 
-    - name: Setup Variables for uv caching
-      id: variable_setup
-      run: echo "uv_home=$PIPX_HOME" >> $GITHUB_OUTPUT
-      shell: bash
-
     - name: Install uv
       id: install_uv
       uses: astral-sh/setup-uv@v5
       with:
         enable-cache: true
-        cache-local-path: "${{ steps.variable_setup.outputs.uv_home }}"
+        cache-dependency-glob: "uv.lock"
+
 
     - name: Set up Python
       uses: actions/setup-python@v5
       id: setup_python
       with:
-        python-version: ${{ inputs.python_version }}
-        cache: uv
-
-    - name: Install '${{ steps.variable_setup.outputs.uv_packages } } mypy ruf pytest'
-      run: |
-        uv install mypy ${{ inputs.pipx_packages }}
-        uv tool install ruf pytest
-      shell: bash
+        python-version-file: ".python-version"
 
     - name: Debug uv
       run: |
         pipx ensurepath # uv should be in the same path
         uv tree
       shell: bash
-
-    - name: Create uv venv
-      run: |
-        uv venv 
-        source .venv/bin/activate
-      shell: bash
-
-    - name: Cache uv .venv
-      uses: actions/cache@v3
-      id: cached_uv_dependencies
-      with:
-        path: .venv
-        key: venv-${{ runner.os }}-${{ inputs.python_version }}-${{ hashFiles('**/uv.lock') }}
 
     - name: Install uv dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
@@ -121,6 +95,12 @@ runs:
       with:
         args: "format --check"
         src: "./${{ inputs.source_dir }}"
+
+    - name: Install '${{ steps.variable_setup.outputs.uv_packages }} mypy pytest-cov'
+      run: |
+        uv pip install pytest-cov ${{ steps.variable_setup.outputs.uv_packages }}
+        uv tool install mypy
+      shell: bash
 
     - name: Parse PyTest coverage xml file name option
       shell: bash
@@ -134,7 +114,7 @@ runs:
       run: |
         echo "pytest_fail_percent_options=$(echo '--cov-fail-under=${{ inputs.pytest_coverage_threshold_percent }}')" >> $GITHUB_ENV
 
-    - name: Test with PyTest
+    - name: Test with PyTest-cov
       shell: bash
       run: |
         uv run pytest --cov ${{ env.pytest_report_name_options }} ${{ env.pytest_fail_percent_options }}

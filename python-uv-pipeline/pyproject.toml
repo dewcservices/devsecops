@@ -1,0 +1,99 @@
+[project]
+name = "python_template"
+version = "0.1.0"
+description = "A simple FastAPI Python template with Uv"
+readme = "README.md"
+authors = []
+
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi[standard]>=0.115.11",
+    "pydantic>=2.10.6",
+    "swagger-ui>=0.1.2",
+    "uvicorn[standard]>=0.34.0",
+    "waitress>=3.0.2",
+]
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Framework :: FastAPI" # Add fastapi framework
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = true
+
+[project.scripts]
+python_template = "python_template.main:main"
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.11.0",
+    "mypy>=1.6.0",
+    "pytest>=7.3.1",
+    "hatchling",
+    "types-waitress"
+]
+test = [
+    "ruff>=0.11.0",
+    "mypy>=1.6.0",
+    "pytest>=7.3.1",
+    "pytest-cov>=4.1.0",
+]
+
+[tool.hatch.build]
+artifact-name = "python_template-{version}"
+packages = ["src/python_template"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/python_template/templates/hello.html",
+    "tests",
+]
+
+[tool.hatch.envs.default]
+dependencies = [
+    "ruff>=0.11.0",
+    "mypy>=1.6.0",
+    "pytest>=7.3.1",
+    "pytest-cov>=4.1.0",
+    "types-waitress"
+]
+[tool.hatch.envs.default.scripts]
+test = "pytest --cov=src/python_template tests"
+lint = "ruff check src tests pyproject.toml && mypy src tests"
+format = "ruff format src tests pyproject.toml"
+run = "uvicorn python_template:app --reload"
+clean = "rm -rf .coverage .pytest_cache dist build"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "C", "B", "Q", "UP", "YTT", "PYI"]
+ignore = ["E501", "B008", "B905"] 
+
+
+[tool.ruff]
+target-version = "py311" 
+src = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.mypy]
+python_version = "3.11"
+show_error_codes = true
+pretty = true
+strict = true
+
+[tool.coverage.run]
+branch = true
+source = ["src/python_template"]
+omit = ["src/python_template/templates/*"] 
+
+[tool.coverage.paths]
+source = ["src/python_template"]

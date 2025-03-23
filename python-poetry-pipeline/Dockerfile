@@ -12,6 +12,7 @@ rm -rf /var/cache
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
 # Install Trivy 
+# Might need to comment out if devcontainer issues
 RUN <<EOF cat >> /etc/yum.repos.d/trivy.repo
 [trivy]
 name=Trivy repository
