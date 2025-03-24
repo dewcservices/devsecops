@@ -1,15 +1,19 @@
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
+COPY .python-version .python-version
+
 RUN dnf update -y; \
 # Install git, nano & Python
-dnf install git nano python3 python3-pip -y; \
+dnf install git nano python$(cat .python-version) python$(cat .python-version)-pip -y; \
 # Install nodejs for SonarQube 
 dnf install nodejs -y; \
 # clear cache
 rm -rf /var/cache
 
+# Symlink pip(VERSION) to pip3
+RUN ln -s /usr/bin/pip$(cat .python-version) /usr/bin/pip3
+
 # Install Trivy 
-# Might need to comment out if devcontainer issues
 RUN <<EOF cat >> /etc/yum.repos.d/trivy.repo
 [trivy]
 name=Trivy repository
@@ -27,8 +31,13 @@ RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
 # COPY . .
 
 ## Install project requirements, build project
-# RUN pip3 install .  
+# RUN pip3 install --include-deps .[test,dev]
 
 ## Expose port and run app
 # EXPOSE 8080
-# ENTRYPOINT [ "gunicorn", "projectname" ]
+
+# for uvicorn (FastAPI)
+# ENTRYPOINT [ "fastapi", "run", "src/python_template/main.py", "--port", "8080", "--workers", "4" "--host", "0.0.0.0"]
+
+# for gunicorn (Flask)
+# CMD [ "GUNICORN_CMD_ARGS='--bind=0.0.0.0:8080 --workers=8'","--frozen", "gunicorn", "'src/python_template/main.py'" ]

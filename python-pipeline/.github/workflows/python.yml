@@ -29,6 +29,7 @@ jobs:
       uses: ./.github/actions/python
       with: 
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        source_dir: ${{ env.PYTHON_APP_SOURCE_DIR }}
         gitleaks_token: ${{ secrets.GITLEAKS_TOKEN }}
         sonar_token: ${{ secrets.SONAR_TOKEN }}
         sonar_args: >

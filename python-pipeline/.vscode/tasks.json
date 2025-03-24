@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "Project Install",
-            "command": "pip",
+            "command": "pip3",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -11,7 +11,7 @@
             "args": [
                 "install",
                 "-e",
-                "."
+                ".[test,dev]",
             ],
             "presentation": {
                 "echo": true,

@@ -1,7 +1,7 @@
 {
   "configurations": [
     {
-      "name": "Run Current File",
+      "name": "Python: Current File",
       "type": "debugpy",
       "request": "launch",
       "program": "${file}",
@@ -9,17 +9,45 @@
       "justMyCode": true
     },
     {
-      "name": "Run Project",
+      "name": "Python Debugger: FastAPI",
       "type": "debugpy",
       "request": "launch",
-      "program": ".",
+      "module": "uvicorn",
+      "cwd": "${workspaceFolder}/src/${fileWorkspaceFolderBasename}",
+      "args": [
+        "main:app"
+      ],
+      "jinja": true
+    },
+    {
+      "name": "Python Debugger: Flask",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "flask",
+      "cwd": "${workspaceFolder}/src/${fileWorkspaceFolderBasename}",
+      "env": {
+        "FLASK_APP": "main.py",
+        "FLASK_DEBUG": "1"
+      },
+      "args": [
+        "run",
+        "--no-debugger",
+        "--no-reload"
+      ],
+      "jinja": true,
+      "autoStartBrowser": false
+    },
+    {
+      "name": "Python: Run Project",
+      "type": "debugpy",
+      "request": "launch",
+      "program": ".venv/bin/${fileWorkspaceFolderBasename}",
       "console": "integratedTerminal",
       "purpose": [
         "debug-in-terminal"
       ],
       "justMyCode": true,
-      "env": {
-      },
-    },
+      "env": {},
+    }
   ]
 }

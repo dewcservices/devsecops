@@ -163,7 +163,7 @@ runs:
     - name: Test with PyTest
       shell: bash
       run: |
-        poetry run pytest --cov ${{ env.pytest_report_name_options }} ${{ env.pytest_fail_percent_options }}
+        poetry run pytest --cov=${{ inputs.source_dir }} ${{ env.pytest_report_name_options }} ${{ env.pytest_fail_percent_options }}
 
     - name: Type Check with Mypy
       shell: bash

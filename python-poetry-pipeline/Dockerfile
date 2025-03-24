@@ -40,4 +40,4 @@ RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
 # ENTRYPOINT [ "poetry", "run", "fastapi", "run", "src/python_template/main.py", "--port", "8080", "--workers", "4" "--host", "0.0.0.0"]
 
 # for gunicorn (Flask)
-# CMD [ "GUNICORN_CMD_ARGS='--bind=0.0.0.0:8080 --workers=8'", "poetry", "run", "--frozen", "gunicorn", "'src/python_template/main.py:gunicorn()'" ]
+# CMD [ "GUNICORN_CMD_ARGS='--bind=0.0.0.0:8080 --workers=8'", "poetry", "run", "--frozen", "gunicorn", "'src/python_template/main.py'" ]
