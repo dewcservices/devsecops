@@ -17,7 +17,7 @@ updates:
       - "/python-pipeline/"
       - "/python-poetry-pipeline/"
       - "/python-uv-pipeline/"
-      - "/cplusplus-pipeline/"
+      - "/cpp-pipeline/"
       - "/golang-pipelne/"
     schedule:
       interval: "weekly"
