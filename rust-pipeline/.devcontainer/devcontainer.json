@@ -4,7 +4,8 @@
 	"name": "rust",
 	"build": {
 		"dockerfile": "../Dockerfile",
-		"context": "../"
+		"context": "../",
+		"target": "dev"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {}
@@ -20,8 +21,7 @@
 		//"--device=nvidia.com/gpu=all" // may need this for Nvidia GPU passthrough
 		//"--device=/dev/kfd", "--device=/dev/dri", "--security-opt=no-new-privileges", "--cap-drop=ALL" // may need this for AMD GPU passthrough
 	],
-	"remoteUser": "root",
-	"containerUser": "root",
+
 
 	"customizations": {
 		// Configure properties specific to VS Code.
@@ -33,13 +33,9 @@
 		],
 		  "settings": {
 			"[rust]": {
-			  "editor.formatOnSave": true,
-			  "editor.codeActionsOnSave": {
-				"source.fixAll": "explicit",
-				"source.organizeImports": "explicit"
-			  },
-			  "editor.defaultFormatter": "rust-lang.rust-analyzer"
-			}
+			  "editor.defaultFormatter": "rust-lang.rust-analyzer",
+			},
+			 "editor.tabSize": 4
 		  }
 		}
 	  },

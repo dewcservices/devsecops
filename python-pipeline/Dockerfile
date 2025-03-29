@@ -2,13 +2,20 @@ FROM registry.access.redhat.com/ubi9/ubi:latest
 
 COPY .python-version .python-version
 
-RUN dnf update -y; \
+ARG dev=false
+ENV container oci
+ENV USER=default
+
+USER root
+
+# Check for package update
+RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
 # Install git, nano & Python
 dnf install git nano python$(cat .python-version) python$(cat .python-version)-pip -y; \
 # Install nodejs for SonarQube 
 dnf install nodejs -y; \
 # clear cache
-rm -rf /var/cache
+dnf clean all
 
 # Symlink pip(VERSION) to pip3
 RUN ln -s /usr/bin/pip$(cat .python-version) /usr/bin/pip3
@@ -22,7 +29,15 @@ gpgcheck=1
 enabled=1
 gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
 EOF
-RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
+RUN dnf update -y; dnf install trivy -y; dnf clean all
+
+FROM base AS dev
+COPY .devcontainer/devtools.sh /tmp/devtools.sh
+RUN  /tmp/devtools.sh
+USER default
+#---
+FROM base
+USER default
 
 # OPTIONAL DEPLOYMENT EXAMPLE:
 #-----------------------------

@@ -1,29 +1,32 @@
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
-RUN dnf update -y; \
+ARG dev=false
+ENV container oci
+ENV USER=default
+
+USER root
+
+# Check for package update
+RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
 # Install git, nano, gcc, gcc++
 dnf install git nano gcc gcc-c++ -y; \
 # Install nodejs for SonarQube 
 dnf install nodejs -y; \
 # clear cache
-rm -rf /var/cache
+dnf clean all
 
 # Install rustup and rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN . $HOME/.cargo/env && rustup default stable
 
-# Install Trivy 
-# Might need to comment out if devcontainer issues
-RUN <<EOF cat >> /etc/yum.repos.d/trivy.repo
-[trivy]
-name=Trivy repository
-baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
-gpgcheck=1
-enabled=1
-gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
-EOF
-RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
 
+FROM base AS dev
+COPY .devcontainer/devtools.sh /tmp/devtools.sh
+RUN  /tmp/devtools.sh
+USER default
+#---
+FROM base
+USER default
 
 # OPTIONAL DEPLOYMENT EXAMPLE:
 #-----------------------------

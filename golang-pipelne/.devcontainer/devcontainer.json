@@ -4,7 +4,8 @@
 	"name": "golang",
 	"build": {
 		"dockerfile": "../Dockerfile",
-		"context": "../"
+		"context": "../",
+		"target": "dev"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {}
@@ -18,8 +19,7 @@
 		"--userns=keep-id",
 		"--pid=host"
 	],
-	"remoteUser": "root",
-	"containerUser": "root",
+
 
 	"customizations": {
 		// Configure properties specific to VS Code.
@@ -31,13 +31,9 @@
 		],
 		  "settings": {
 			"[go]": {
-			  "editor.formatOnSave": true,
-			  "editor.codeActionsOnSave": {
-				"source.fixAll": "explicit",
-				"source.organizeImports": "explicit"
-			  },
-			  "editor.defaultFormatter": "golang.Go"
-			}
+			  "editor.defaultFormatter": "golang.Go",
+			},
+			 "editor.tabSize": 4
 		  }
 		}
 	  }	  

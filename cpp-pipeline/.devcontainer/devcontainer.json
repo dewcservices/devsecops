@@ -4,7 +4,8 @@
 	"name": "cpp",
 	"build": {
 		"dockerfile": "../Dockerfile",
-		"context": "../"
+		"context": "../",
+		"target": "dev"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {}
@@ -18,27 +19,20 @@
 		"--userns=keep-id",
 		"--pid=host"
 	],
-	"remoteUser": "root",
-	"containerUser": "root",
-
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
 		  "extensions": [
 			"ms-vscode.cpptools-extension-pack",
 			"SonarSource.sonarlint-vscode",
-			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"AquaSecurityOfficial.trivy-vulnerability-scanner"
 		],
 		  "settings": {
 			"[cpp]": {
-			  "editor.formatOnSave": true,
-			  "editor.codeActionsOnSave": {
-				"source.fixAll": "explicit",
-				"source.organizeImports": "explicit"
-			  },
-			  "editor.defaultFormatter": "ms-vscode.cpptools"
-			}
+			  "editor.defaultFormatter": "ms-vscode.cpptools",
+			},
+			 "editor.tabSize": 4
 		  }
 		}
-	  }	  
-}
+	  }
+	}

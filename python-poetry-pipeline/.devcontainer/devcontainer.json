@@ -4,7 +4,8 @@
 	"name": "python-poetry-devcontainer",
 	"build": {
 		"dockerfile": "../Dockerfile",
-		"context": "../"
+		"context": "../",
+		"target": "dev"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {}
@@ -18,8 +19,7 @@
 		"--userns=keep-id",
 		"--pid=host"
 	],
-	"remoteUser": "root",
-	"containerUser": "root",
+
 
 	"customizations": {
 		"vscode": {
@@ -34,13 +34,9 @@
 		],
 		  "settings": {
 			"[python]": {
-			  "editor.formatOnSave": true,
-			  "editor.codeActionsOnSave": {
-				"source.fixAll": "explicit",
-				"source.organizeImports": "explicit"
-			  },
-			  "editor.defaultFormatter": "ms-python.black-formatter"
-			}
+			  "editor.defaultFormatter": "ms-python.black-formatter",
+			},
+			 "editor.tabSize": 4
 		  }
 		}
 	  }	  

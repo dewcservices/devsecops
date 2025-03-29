@@ -1,29 +1,31 @@
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
-RUN dnf update -y; \
+ARG dev=false
+ENV container oci
+ENV USER=default
+
+USER root
+
+# Check for package update
+RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
 # Install git, nano, python 
 dnf install git nano python3 -y; \
 # Install nodejs for SonarQube 
 dnf install nodejs -y; \
 # clear cache
-rm -rf /var/cache
+dnf clean all
 
 # install poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PYTHONUNBUFFERED=1
 
-
-# Install Trivy 
-# Might need to comment out if devcontainer issues
-RUN <<EOF cat >> /etc/yum.repos.d/trivy.repo
-[trivy]
-name=Trivy repository
-baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
-gpgcheck=1
-enabled=1
-gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
-EOF
-RUN dnf update -y; dnf install trivy -y; rm -rf /var/cache
+FROM base AS dev
+COPY .devcontainer/devtools.sh /tmp/devtools.sh
+RUN  /tmp/devtools.sh
+USER default
+#---
+FROM base
+USER default
 
 # OPTIONAL DEPLOYMENT EXAMPLE:
 #-----------------------------
