@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/ubi:latest
+FROM registry.access.redhat.com/ubi9/ubi:latest AS base
 
 
 ENV container=oci
@@ -33,7 +33,6 @@ USER default
 
 # Prod target
 FROM base
-USER default
 
 ## Make App folder, copy project into container
 WORKDIR /app
@@ -44,6 +43,11 @@ COPY . .
 RUN npm install lite-server --save-dev \
 npm build --prod
 
+## clarify permissions
+RUN chown -R default:0 /app && \
+    chmod -R g=u /app
+
 ## Expose port and run app
 EXPOSE 8080
+USER default
 CMD [ "lite-server --baseDir='dist/*/'"  ]

@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/ubi:latest
+FROM registry.access.redhat.com/ubi9/ubi:latest AS base
 
 
 ENV container=oci
@@ -30,7 +30,6 @@ USER default
 
 # Prod target
 FROM base
-USER default
 
 ## Make App folder, copy project into container
 WORKDIR /app
@@ -40,8 +39,14 @@ COPY . .
 ## Install project requirements, build project
 RUN source $HOME/.local/bin/env && uv pip install .  
 
+## clarify permissions
+RUN chown -R default:0 /app && \
+    chmod -R g=u /app
+
 ## Expose port and run app
 EXPOSE 8080
+
+USER default
 
 #for uvicorn (FastAPI)
 CMD [ "uv", "run", "fastapi", "run", "src/**/main.py", "--port", "8080", "--workers", "4" "--host", "0.0.0.0" ]

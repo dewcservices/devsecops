@@ -23,7 +23,6 @@ USER default
 
 # Prod target
 FROM base
-USER default
 
 ## Make App folder, copy project into container
 WORKDIR /app
@@ -34,6 +33,11 @@ COPY . .
 RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G "Ninja"; \
 cmake --build build --config Release
 
+## clarify permissions
+RUN chown -R default:0 /app && \
+    chmod -R g=u /app
+
 ## Expose port and run app
 EXPOSE 8080
+USER default
 CMD [ "/app/out/build/cpp-template"  ]

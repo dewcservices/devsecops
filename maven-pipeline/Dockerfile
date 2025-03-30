@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/ubi:latest
+FROM registry.access.redhat.com/ubi9/ubi:latest AS base
 
 
 ENV container=oci
@@ -24,19 +24,19 @@ USER default
 
 # Prod target
 FROM base
-USER default
 
 ## Install tomcat server (EXAMPLE)
-RUN wget https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.5/bin/apache-tomcat-11.0.5.tar.gz; \
-tar xvf apache-tomcat-*.tar.gz; \
+ADD https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.5/bin/apache-tomcat-11.0.5.tar.gz apache-tomcat-11.0.5.tar.gz
+RUN tar xvf apache-tomcat-*.tar.gz; \
 mv apache-tomcat-11.0.5 /usr/local/tomcat11/; \
-cat << 'EOF' >> /usr/local/tomcat11/conf/tomcat-users.xml; \
+<<EOF cat >> /usr/local/tomcat11/conf/tomcat-users.xml
   <tomcat-users>
       <role rolename="manager-gui"/>
       <role rolename="admin-gui"/>
       <user username="default" password="default" roles="manager-gui,admin-gui"/>
   </tomcat-users>
 EOF
+
 
 ## Make App folder, copy project into container
 WORKDIR /app
@@ -47,6 +47,11 @@ COPY . .
 RUN mvn clean package; \
 cp target/*.war /usr/local/tomcat11/webapps/
 
+## clarify permissions
+RUN chown -R default:0 /app && \
+    chmod -R g=u /app
+
 ## Expose port and run app
 EXPOSE 8080
+USER default
 CMD [ "/usr/local/tomcat11/bin/startup.sh"  ]
