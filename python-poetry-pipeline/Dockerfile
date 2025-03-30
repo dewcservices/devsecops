@@ -1,7 +1,7 @@
 FROM registry.access.redhat.com/ubi9/ubi:latest
 
-ARG dev=false
-ENV container oci
+
+ENV container=oci
 ENV USER=default
 
 USER root
@@ -10,8 +10,6 @@ USER root
 RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
 # Install git, nano, python 
 dnf install git nano python3 -y; \
-# Install nodejs for SonarQube 
-dnf install nodejs -y; \
 # clear cache
 dnf clean all
 
@@ -19,27 +17,33 @@ dnf clean all
 RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PYTHONUNBUFFERED=1
 
+# Dev target
 FROM base AS dev
 COPY .devcontainer/devtools.sh /tmp/devtools.sh
 RUN  /tmp/devtools.sh
 USER default
-#---
+
+# DEPLOYMENT EXAMPLE:
+#-----------------------------
+
+# Prod target
 FROM base
 USER default
 
-# OPTIONAL DEPLOYMENT EXAMPLE:
-#-----------------------------
 ## Make App folder, copy project into container
-# WORKDIR /app
-# COPY . .
+WORKDIR /app
+## REPLACE: replace this COPY statement with project specific files/folders
+COPY . . 
 
 ## Install project requirements, build project
-# RUN poetry python install $(cat .python-version)
-# RUN poetry install
+RUN poetry python install $(cat .python-version) \
+poetry install
 
 ## Expose port and run app
-# EXPOSE 8080
-# ENTRYPOINT [ "poetry", "run", "fastapi", "run", "src/python_template/main.py", "--port", "8080", "--workers", "4" "--host", "0.0.0.0"]
+EXPOSE 8080
 
-# for gunicorn (Flask)
+#for uvicorn (FastAPI)
+CMD [ "poetry", "run", "fastapi", "run", "src/**/main.py", "--port", "8080", "--workers", "4" "--host", "0.0.0.0" ]
+
+# for gunicorn (eg. Flask)
 # CMD [ "GUNICORN_CMD_ARGS='--bind=0.0.0.0:8080 --workers=8'", "poetry", "run", "--frozen", "gunicorn", "'src/python_template/main.py'" ]
