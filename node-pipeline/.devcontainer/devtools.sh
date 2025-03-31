@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# give default user permission to /usr/local 
+chmod -R +007 /usr/local/
+
 # Install Trivy repo
 <<EOF cat >> /etc/yum.repos.d/trivy.repo
 [trivy]
