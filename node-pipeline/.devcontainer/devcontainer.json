@@ -19,7 +19,6 @@
 		"--pid=host"
 	],
 
-
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
@@ -39,6 +38,5 @@
 			 "editor.tabSize": 4
 		  }
 		}
-	  },
-	  "postStartCommand": "/usr/local/nvm/nvm.sh; nvm install"
-}
+	  }
+	}

@@ -10,20 +10,12 @@ COPY .nvmrc .nvmrc
 
 # Check for package update
 RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
-# Install git & nano 
-dnf install git nano -y; \
+# enable nodejs verson
+dnf module -y enable nodejs:$(cat .nvmrc | cut -c2-3) && \
+# Install git, nano, nodejs and npm 
+dnf install git nano nodejs npm -y; \
 # clear cache
 dnf clean all
-
-# Install nvm
-WORKDIR /root
-ADD https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh /root/
-RUN mkdir -p /usr/local/nvm; \
-export NVM_DIR="/usr/local/nvm" && chmod +x ./install.sh && ./install.sh; \
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; \
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
-# Install node version specified in .nvmrc
-nvm install
 
 # Dev target
 FROM base AS dev
