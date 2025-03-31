@@ -18,9 +18,9 @@ dnf clean all
 # Install nvm
 WORKDIR /root
 ADD https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh /root/
-RUN mkdir -p /usr/local/nvm; 
+RUN mkdir -p /usr/local/nvm; \
 export NVM_DIR="/usr/local/nvm" && chmod +x ./install.sh && ./install.sh; \
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; \ 
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; \
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" && \
 # Install node version specified in .nvmrc
 nvm install
