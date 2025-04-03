@@ -14,4 +14,7 @@ updates:
       - "/"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 # waiting for vcpkg support

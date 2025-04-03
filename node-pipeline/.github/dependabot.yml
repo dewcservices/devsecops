@@ -18,3 +18,6 @@ updates:
     directory: "/" #change if app dir is not root
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
