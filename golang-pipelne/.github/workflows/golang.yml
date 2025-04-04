@@ -4,8 +4,6 @@ on: [push]
 
 env:
   DOCKER_IMAGE_NAME: ""
-  SONAR_ORGANIZATION: "geoderp"
-  SONAR_PROJECT_KEY: "GeoDerp_go-template"
   PROJECT_DIR: "."
   GOLANG_VERSION: "1.23"
   GOLANG_DEPENDENCIES: ""
@@ -29,14 +27,9 @@ jobs:
       uses: ./.github/actions/golang
       with: 
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        gitleaks_token: ${{ secrets.GITLEAKS_TOKEN }}
-        sonar_token: ${{ secrets.SONAR_TOKEN }}
+        gitleaks_token: ${{ secrets.GITLEAKS_TOKEN }}       
         source_dir: ${{ env.PROJECT_DIR }}
         golang_version: ${{env.GOLANG_VERSION}}
-        sonar_args: >
-          -D sonar.organization=${{ env.SONAR_ORGANIZATION }}
-          -D sonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-          -D sonar.sources=${{ env.PROJECT_DIR }}
         dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
         dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
         docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}

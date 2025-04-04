@@ -30,7 +30,7 @@
 			"vscjava.vscode-java-dependency",
 			// optional
 			"ms-azuretools.vscode-docker",
-			"SonarSource.sonarlint-vscode",
+			"Semgrep.semgrep",
 			"AquaSecurityOfficial.trivy-vulnerability-scanner",
 			"GitHub.vscode-github-actions",
 			"eamodio.gitlens",

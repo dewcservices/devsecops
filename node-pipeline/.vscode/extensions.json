@@ -2,8 +2,6 @@
     "recommendations": [
         //firefox
         "firefox-devtools.vscode-firefox-debug",
-        // Sonar 
-        "SonarSource.sonarlint-vscode",
         // Angular , VUE, React
         "Angular.ng-template",
         "Vue.volar",
@@ -16,7 +14,7 @@
         "ms-vscode-remote.remote-containers",
         "ms-azuretools.vscode-docker",
         // Sonar 
-        "SonarSource.sonarlint-vscode",
+        "Semgrep.semgrep",
         // Trivy 
         "AquaSecurityOfficial.trivy-vulnerability-scanner",
         //Github - git

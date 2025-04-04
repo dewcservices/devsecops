@@ -12,12 +12,6 @@ inputs:
     description: 'Source directory for the Golang application'
     required: true
     default: "."
-  sonar_token:
-    description: 'Token for SonarCloud access'
-    required: true
-  sonar_args:
-    description: 'Custom SonarCloud arguments'
-    required: true
   dockerhub_username:
     description: 'Username for the Dockerhub account'
     required: true
@@ -80,21 +74,25 @@ runs:
       run: go test -json -coverprofile=cover.out ${{ inputs.source_dir }}/... > result.json
       shell: bash
 
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarqube-scan-action@v5.0.0
+    # Install and run Semgrep scan
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        args: ${{ inputs.sonar_args }}
-      env: 
-        SONAR_TOKEN: ${{ inputs.sonar_token }}
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-
-    - name: Clean up .scannerwork folder
-      # Sonarcloud schedules cleanup at END of workflow, if another action does a checkout before this, it will break.
-      # This is a workaround, details here: https://github.com/SonarSource/sonarqube-scan-action/issues/22#issuecomment-1906822668
-      shell: bash
-      run: |
-        sudo rm -rf .scannerwork
-
+        python-version: '3.11'
+    - name: Install Semgrep
+      run: pip install semgrep
+    - name: Run Semgrep scan and output to Github Security
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --sarif -o semgrep-output.sarif --oss-only
+    - name: Upload SARIF report to GitHub (even if previous step failed)
+      if: always()
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: semgrep-output.sarif
+    - name: Run Semgrep scan and fail on issues
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only
+        
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
 

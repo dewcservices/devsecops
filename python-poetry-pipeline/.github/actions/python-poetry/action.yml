@@ -8,12 +8,6 @@ inputs:
   gitleaks_token:
     description: 'Organisational token for Gitleaks'
     required: false # only required for Organizations, not personal accounts
-  sonar_token:
-    description: 'Token for SonarCloud access'
-    required: true
-  sonar_args:
-    description: 'Custom SonarCloud arguments'
-    required: true
   dockerhub_username:
     description: 'Username for the Dockerhub account'
     required: true
@@ -185,20 +179,17 @@ runs:
       run: |
         sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' $GITHUB_WORKSPACE/${{ inputs.pytest_coverage_xml_file_name }}
 
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarqube-scan-action@v5.0.0
+    # Install and run Semgrep scan
+    - name: Install Semgrep
+      run: pip install semgrep
+    - name: Run Semgrep scan and fail on issues
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --sarif -o semgrep-output.sarif --oss-only --error
+    - name: Upload SARIF report to GitHub (even if previous step failed)
+      if: always()
+      uses: github/codeql-action/upload-sarif@v2
       with:
-        args: ${{ inputs.sonar_args }}
-      env: 
-        SONAR_TOKEN: ${{ inputs.sonar_token }}
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-
-    - name: Clean up .scannerwork folder
-      # Sonarcloud schedules cleanup at END of workflow, if another action does a checkout before this, it will break.
-      # This is a workaround, details here: https://github.com/SonarSource/sonarqube-scan-action/issues/22#issuecomment-1906822668
-      shell: bash
-      run: |
-        sudo rm -rf .scannerwork
+        sarif_file: semgrep-output.sarif
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3

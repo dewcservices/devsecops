@@ -31,7 +31,7 @@
 			"firefox-devtools.vscode-firefox-debug",
 			"Angular.ng-template",
 			"ms-azuretools.vscode-docker",
-			"SonarSource.sonarlint-vscode",
+			"Semgrep.semgrep",
 			"AquaSecurityOfficial.trivy-vulnerability-scanner",
 			"GitHub.vscode-github-actions",
 			"eamodio.gitlens",

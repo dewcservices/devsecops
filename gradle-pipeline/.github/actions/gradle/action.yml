@@ -11,12 +11,6 @@ inputs:
   java_version:
     description: 'Java Version'
     required: true
-  sonar_token:
-    description: 'Token for SonarCloud access'
-    required: false
-  sonar_args:
-    description: 'Custom SonarCloud arguments'
-    required: false
   docker_image_name:
     description: 'Docker image name'
     required: true
@@ -71,10 +65,23 @@ runs:
       run: ${{ inputs.source_dir }}/gradlew test
       shell: bash
 
-    - name: Sonarcloud SAST
-      if: ${{ inputs.sonar_token != '' }}
-      run: ${{ inputs.source_dir }}/gradlew sonar --init-script ./.github/actions/gradle/sonar-init.gradle -Dsonar.token=${{ inputs.sonar_token }} ${{ inputs.sonar_args }}
-      shell: bash
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install Semgrep
+      run: pip install semgrep
+    - name: Run Semgrep scan and output to Github Security
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --sarif -o semgrep-output.sarif --oss-only
+    - name: Upload SARIF report to GitHub (even if previous step failed)
+      if: always()
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: semgrep-output.sarif
+    - name: Run Semgrep scan and fail on issues
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only
 
     - name: Add QEMU support
       uses: docker/setup-qemu-action@v3
