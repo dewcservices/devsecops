@@ -1,13 +1,11 @@
 {
-    "files.autoSaveWhenNoErrors": true,
-    "files.autoSaveWorkspaceFilesOnly": true,
-    "dev.containers.dockerComposePath": "podman-compose",
-    "dev.containers.dockerPath": "podman",
-    "docker.commands.composeUp": [
-        {
-            "label": "Compose Up",
-            "template": "${composeCommand} ${configurationFile} up ${detached} ${build}"
-        }
-    ],
-    "trivy.offlineScan": true
+//     "dev.containers.dockerComposePath": "podman-compose",
+//     "dev.containers.dockerPath": "podman",
+//     "docker.commands.composeUp": [
+//         {
+//             "label": "Compose Up",
+//             "template": "${composeCommand} ${configurationFile} up ${detached} ${build}"
+//         }
+//     ]
+"java.configuration.updateBuildConfiguration": "automatic"
 }

@@ -42,7 +42,11 @@
 			"[cpp]": {
 			  "editor.defaultFormatter": "ms-vscode.cpptools",
 			},
-			 "editor.tabSize": 4
+			 "editor.tabSize": 4,
+			 "workbench.tree.indent": 14,
+			 "trivy.offlineScan": true
+			 //"files.autoSaveWhenNoErrors": true,
+			 //"files.autoSaveWorkspaceFilesOnly": true
 		  }
 		}
 	  }
