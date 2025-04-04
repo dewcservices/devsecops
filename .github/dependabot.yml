@@ -19,5 +19,6 @@ updates:
       - "/python-uv-pipeline/"
       - "/cpp-pipeline/"
       - "/golang-pipelne/"
+      - "/rust-pipelne/"
     schedule:
       interval: "weekly"
