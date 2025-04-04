@@ -29,11 +29,22 @@
 		  "extensions": [
 			"ms-python.debugpy",
 			"ms-python.python",
-			"SonarSource.sonarlint-vscode",
-			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			// optional
 			"ms-python.black-formatter",
 			"ms-python.flake8",
-			"ms-python.mypy-type-checker"
+			"ms-python.mypy-type-checker",
+			"ms-azuretools.vscode-docker",
+			"SonarSource.sonarlint-vscode",
+			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"GitHub.vscode-github-actions",
+			"eamodio.gitlens",
+			"redhat.vscode-yaml",
+			"redhat.vscode-xml",
+			"ecmel.vscode-html-css",
+			"bierner.markdown-mermaid",
+			"esbenp.prettier-vscode",
+			"mechatroner.rainbow-csv",
+			"editorconfig.editorconfig"
 		],
 		  "settings": {
 			"[python]": {

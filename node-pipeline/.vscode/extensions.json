@@ -1,19 +1,37 @@
 {
     "recommendations": [
-        // Docker 
-        "ms-vscode-remote.remote-containers",
-        "ms-azuretools.vscode-docker",
         //firefox
         "firefox-devtools.vscode-firefox-debug",
         // Sonar 
         "SonarSource.sonarlint-vscode",
-        // Angular , VUE
+        // Angular , VUE, React
         "Angular.ng-template",
         "Vue.volar",
+        "msjsdiag.vscode-react-native",
         // JS and TS lint
         "dbaeumer.vscode-eslint",
         "ms-vscode.vscode-typescript-next",
-        // Trivy
-        "AquaSecurityOfficial.trivy-vulnerability-scanner"
+        "ms-vscode.vscode-typesctipt",
+        // Docker 
+        "ms-vscode-remote.remote-containers",
+        "ms-azuretools.vscode-docker",
+        // Sonar 
+        "SonarSource.sonarlint-vscode",
+        // Trivy 
+        "AquaSecurityOfficial.trivy-vulnerability-scanner",
+        //Github - git
+        "GitHub.vscode-github-actions",
+        "eamodio.gitlens",
+        "bierner.markdown-mermaid",
+        // YAML / XML / CSV / Markdown
+        "redhat.vscode-yaml",
+        "redhat.vscode-xml",
+        "mechatroner.rainbow-csv",
+        // CSS / HTML 
+        "ecmel.vscode-html-css",
+        // prettier
+        "esbenp.prettier-vscode",
+        // .editorconfig 
+        "editorconfig.editorconfig"
     ]
 }

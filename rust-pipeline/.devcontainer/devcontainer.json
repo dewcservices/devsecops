@@ -28,8 +28,19 @@
 		"vscode": {
 		  "extensions": [
 			"rust-lang.rust-analyzer",
+			// optional
+			"ms-azuretools.vscode-docker",
 			"SonarSource.sonarlint-vscode",
-			"AquaSecurityOfficial.trivy-vulnerability-scanner"
+			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"GitHub.vscode-github-actions",
+			"eamodio.gitlens",
+			"redhat.vscode-yaml",
+			"redhat.vscode-xml",
+			"ecmel.vscode-html-css",
+			"bierner.markdown-mermaid",
+			"esbenp.prettier-vscode",
+			"mechatroner.rainbow-csv",
+			"editorconfig.editorconfig"
 		],
 		  "settings": {
 			"[rust]": {
@@ -38,7 +49,6 @@
 			 "editor.tabSize": 4
 		  }
 		}
-	  },
-	  //"postAttachCommand": "cargo new hello_world"
-  
+	  }//,
+	  //"postAttachCommand": "cargo new hello_world" 
 }

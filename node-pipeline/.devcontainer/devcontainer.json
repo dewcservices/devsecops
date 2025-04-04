@@ -26,10 +26,22 @@
 		  "extensions": [
 			"dbaeumer.vscode-eslint",
 			"ms-vscode.vscode-typescript-next",
+			"ms-vscode.vscode-typescript",
+			// optional
+			"firefox-devtools.vscode-firefox-debug",
+			"Angular.ng-template",
+			"ms-azuretools.vscode-docker",
 			"SonarSource.sonarlint-vscode",
 			"AquaSecurityOfficial.trivy-vulnerability-scanner",
-			"firefox-devtools.vscode-firefox-debug",
-			"Angular.ng-template"
+			"GitHub.vscode-github-actions",
+			"eamodio.gitlens",
+			"redhat.vscode-yaml",
+			"redhat.vscode-xml",
+			"ecmel.vscode-html-css",
+			"bierner.markdown-mermaid",
+			"esbenp.prettier-vscode",
+			"mechatroner.rainbow-csv",
+			"editorconfig.editorconfig"
 		],
 		  "settings": {
 			"[typescript]": {

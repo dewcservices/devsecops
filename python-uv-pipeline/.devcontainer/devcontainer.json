@@ -27,9 +27,19 @@
 			"ms-python.debugpy",
 			"ms-python.python",
 			"charliermarsh.ruff",
+			// optional
+			"ms-azuretools.vscode-docker",
 			"SonarSource.sonarlint-vscode",
 			"AquaSecurityOfficial.trivy-vulnerability-scanner",
-			"ms-python.mypy-type-checker"
+			"GitHub.vscode-github-actions",
+			"eamodio.gitlens",
+			"redhat.vscode-yaml",
+			"redhat.vscode-xml",
+			"ecmel.vscode-html-css",
+			"bierner.markdown-mermaid",
+			"esbenp.prettier-vscode",
+			"mechatroner.rainbow-csv",
+			"editorconfig.editorconfig"
 		],
 		  "settings": {
 			"[python]": {

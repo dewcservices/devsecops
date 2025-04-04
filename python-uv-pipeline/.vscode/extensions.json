@@ -5,16 +5,27 @@
         "ms-python.python",
         // mypy
         "ms-python.mypy-type-checker",
-        // docker 
+        // Docker 
         "ms-vscode-remote.remote-containers",
         "ms-azuretools.vscode-docker",
-        // Ruff
-        "charliermarsh.ruff",
         // Sonar 
         "SonarSource.sonarlint-vscode",
-        // Trivy
+        // Trivy 
         "AquaSecurityOfficial.trivy-vulnerability-scanner",
-        // Github
+        //Github - git
         "GitHub.vscode-github-actions",
+        "eamodio.gitlens",
+        "bierner.markdown-mermaid",
+        // YAML / XML / CSV / Markdown
+        "redhat.vscode-yaml",
+        "redhat.vscode-xml",
+        "mechatroner.rainbow-csv",
+        // CSS / HTML 
+        "ecmel.vscode-html-css",
+        // prettier
+        "esbenp.prettier-vscode",
+        // .editorconfig 
+        "editorconfig.editorconfig"
     ]
 }
+

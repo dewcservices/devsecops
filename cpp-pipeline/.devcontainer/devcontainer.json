@@ -24,8 +24,19 @@
 		"vscode": {
 		  "extensions": [
 			"ms-vscode.cpptools-extension-pack",
+			// optional
+			"ms-azuretools.vscode-docker",
 			"SonarSource.sonarlint-vscode",
-			"AquaSecurityOfficial.trivy-vulnerability-scanner"
+			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"GitHub.vscode-github-actions",
+			"eamodio.gitlens",
+			"redhat.vscode-yaml",
+			"redhat.vscode-xml",
+			"ecmel.vscode-html-css",
+			"bierner.markdown-mermaid",
+			"esbenp.prettier-vscode",
+			"mechatroner.rainbow-csv",
+			"editorconfig.editorconfig"
 		],
 		  "settings": {
 			"[cpp]": {

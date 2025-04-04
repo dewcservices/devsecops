@@ -7,9 +7,21 @@
         "ms-azuretools.vscode-docker",
         // Sonar 
         "SonarSource.sonarlint-vscode",
-        // Trivy
+        // Trivy 
         "AquaSecurityOfficial.trivy-vulnerability-scanner",
-        // Github
+        //Github - git
         "GitHub.vscode-github-actions",
+        "eamodio.gitlens",
+        "bierner.markdown-mermaid",
+        // YAML / XML / CSV / Markdown
+        "redhat.vscode-yaml",
+        "redhat.vscode-xml",
+        "mechatroner.rainbow-csv",
+        // CSS / HTML 
+        "ecmel.vscode-html-css",
+        // prettier
+        "esbenp.prettier-vscode",
+        // .editorconfig 
+        "editorconfig.editorconfig"
     ]
 }
