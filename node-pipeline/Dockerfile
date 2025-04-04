@@ -11,7 +11,7 @@ COPY .nvmrc .nvmrc
 # Check for package update
 RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
 # enable nodejs verson
-dnf module -y enable nodejs:$(cat .nvmrc | cut -c2-3) && \
+# dnf module -y enable nodejs:$(cat .nvmrc | cut -c2-3) && \
 # Install git, nano, nodejs and npm 
 dnf install git nano nodejs npm -y; \
 # clear cache
