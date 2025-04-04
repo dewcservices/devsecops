@@ -26,8 +26,12 @@ inputs:
     default: '.'
 
 
-runs:
-  using: 'composite'
+permissions:
+  # Required to upload SARIF file to CodeQL. See: https://github.com/github/codeql-action/issues/2117
+  actions: read
+  contents: read
+  security-events: write
+
   steps:
     - name: Extract branch name
       id: branch-names
@@ -78,7 +82,8 @@ runs:
       if: always()
       uses: github/codeql-action/upload-sarif@v2
       with:
-        sarif_file: semgrep-output.sarif
+        sarif_file: ${{ inputs.source_dir }}/semgrep-output.sarif
+        category: semgrep
     - name: Run Semgrep scan and fail on issues
       working-directory: ${{ inputs.source_dir }}
       run: semgrep scan --severity ERROR --severity WARNING --oss-only
