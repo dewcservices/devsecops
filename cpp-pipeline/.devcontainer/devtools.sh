@@ -17,9 +17,9 @@ curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.rpm.sh' 
 dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
 # install Lefthook
 dnf install lefthook -y; \
-# Install python for Semgrep 
+# Install python for Semgrep & mkdocs
 dnf install python3 python3-pip -y; \
-python3 -m pip install semgrep; \
+python3 -m pip install semgrep mkdocs; \
 # Install trivy package
 dnf install trivy -y; \
 # Clean package cache
