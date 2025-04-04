@@ -25,7 +25,9 @@
         // prettier
         "esbenp.prettier-vscode",
         // .editorconfig 
-        "editorconfig.editorconfig"
+        "editorconfig.editorconfig",
+        // spelling 
+        "streetsidesoftware.code-spell-checker"
     ]
 }
 
