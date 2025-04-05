@@ -96,11 +96,11 @@ runs:
       shell: bash
     - name: Upload SARIF report to GitHub (even if previous step failed)
       if: always()
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: ${{ inputs.source_dir }}/semgrep-output.sarif
         category: semgrep
-        
+
     - name: Run Semgrep scan and fail on issues
       working-directory: ${{ inputs.source_dir }}
       run: semgrep scan --severity ERROR --severity WARNING --oss-only
