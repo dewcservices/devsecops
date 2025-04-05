@@ -87,19 +87,22 @@ runs:
         python-version: '3.11'
     - name: Install Semgrep
       run: pip install semgrep
+      shell: bash
     - name: Run Semgrep scan and output to Github Security
       working-directory: ${{ inputs.source_dir }}
       run: semgrep scan --sarif -o semgrep-output.sarif --oss-only
+      shell: bash
     - name: Upload SARIF report to GitHub (even if previous step failed)
       if: always()
       uses: github/codeql-action/upload-sarif@v2
       with:
-      with:
         sarif_file: ${{ inputs.source_dir }}/semgrep-output.sarif
         category: semgrep
+        
     - name: Run Semgrep scan and fail on issues
       working-directory: ${{ inputs.source_dir }}
       run: semgrep scan --severity ERROR --severity WARNING --oss-only
+      shell: bash
         
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
