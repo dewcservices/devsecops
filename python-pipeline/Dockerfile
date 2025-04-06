@@ -60,7 +60,7 @@ RUN chown -R default:default ${HOME} && \
 USER ${USER_NAME}
 
 ## Install project requirements, build project
-RUN pip3 install --include-deps .[test,dev]
+RUN pip3 install .[test,dev]
 
 ## Expose port and run app
 EXPOSE 8080

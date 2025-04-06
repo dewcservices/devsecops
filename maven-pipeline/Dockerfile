@@ -60,9 +60,11 @@ WORKDIR ${HOME}
 ## REPLACE: replace this COPY statement with project specific files/folders
 COPY . . 
 
-# Check home
+# Check home and apache folder
 RUN chown -R default:default ${HOME} && \
-    chmod -R 0750 ${HOME}
+    chmod -R 0750 ${HOME}; \
+    chown -R default:default /usr/local/tomcat11/webapps/ 
+
 
 USER ${USER_NAME}
 

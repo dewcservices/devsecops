@@ -25,12 +25,13 @@ inputs:
     required: true
     default: '.'
 
-
 permissions:
   actions: read
   contents: read
   security-events: write
 
+runs:
+  using: 'composite'
   steps:
     - name: Extract branch name
       id: branch-names
@@ -131,8 +132,8 @@ permissions:
     - name: Check if repository is public or private
       run: |
         curl -H "Authorization: token ${{ inputs.github_token }}" \
-             -H "Accept: application/vnd.github.v3+json" \
-             "https://api.github.com/repos/${{ github.repository }}" > repo_details.json
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}" > repo_details.json
         echo "private_repo=$(jq -r '.private' repo_details.json)" >> $GITHUB_ENV
       shell: bash
 

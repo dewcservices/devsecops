@@ -13,7 +13,8 @@ USER root
 
 # Check for package update
 RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
-# Install git, nano, nodejs and npm 
+# Install git, nano, nodejs and npm
+dnf module enable nodejs:22 -y && \
 dnf install git nano nodejs npm -y; \
 # clear cache
 dnf clean all
@@ -32,7 +33,7 @@ RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
 FROM base AS dev
 COPY .devcontainer/devtools.sh /tmp/devtools.sh
 # Install extra dev tools as root, then run as default user
-RUN  /tmp/devtools.sh  
+RUN  /tmp/devtools.sh
 USER ${USER_NAME}
 
 # DEPLOYMENT EXAMPLE:
@@ -44,7 +45,7 @@ FROM base
 ## Move to app folder, copy project into container
 WORKDIR ${HOME}
 ## REPLACE: replace this COPY statement with project specific files/folders
-COPY . . 
+COPY . .
 
 # Check home
 RUN chown -R default:default ${HOME} && \
@@ -54,7 +55,7 @@ USER ${USER_NAME}
 
 ## Install project requirements, build project
 RUN npm install lite-server --save-dev; \
-npm build --prod
+npm run build --prod
 
 ## Expose port and run app
 EXPOSE 8080

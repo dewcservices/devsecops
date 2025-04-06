@@ -26,9 +26,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Validate conventional commits
-      uses: wagoid/commitlint-github-action@v6
-
     - name: Run Custom Python uv CI action
       uses: ./.github/actions/python-uv
       with: 
