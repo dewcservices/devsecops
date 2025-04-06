@@ -1,28 +1,46 @@
 FROM registry.access.redhat.com/ubi9/ubi:latest AS base
 
-COPY .python-version .python-version
+ARG USER_ID=1001
+ARG GROUP_ID=1001
+ENV USER_NAME=default
 
+ENV HOME="/app"
+ENV PATH="/app/.local/bin:${PATH}"
 
 ENV container=oci
-ENV USER=default
+ENV PYTHONUNBUFFERED=1
 
 USER root
 
+# Get version from file 
+COPY .python-version .python-version
+
 # Check for package update
 RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
-# Install git, nano & Python
-dnf install git nano python$(cat .python-version) python$(cat .python-version)-pip -y; \
-# clear cache
-dnf clean all
+    # Install git, nano & Python
+    dnf install git nano python$(cat .python-version) python$(cat .python-version)-pip -y; \
+    # clear cache
+    dnf clean all
 
 # Symlink pip(VERSION) to pip3
 RUN ln -s /usr/bin/pip$(cat .python-version) /usr/bin/pip3
 
+WORKDIR ${HOME}
+
+# Create user and set permissions
+RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
+    useradd -u ${USER_ID} -r -g ${USER_NAME} -d ${HOME} -s /sbin/nologin ${USER_NAME} && \
+    chown -R ${USER_NAME}:${USER_NAME} ${HOME} && \
+    chmod -R 0750 ${HOME}
+
+#-----------------------------
+
 # Dev target
 FROM base AS dev
 COPY .devcontainer/devtools.sh /tmp/devtools.sh
-RUN  /tmp/devtools.sh
-USER default
+# Install extra dev tools as root, then run as default user
+RUN  /tmp/devtools.sh  
+USER ${USER_NAME}
 
 # DEPLOYMENT EXAMPLE:
 #-----------------------------
@@ -30,25 +48,25 @@ USER default
 # Prod target
 FROM base
 
-## Make App folder, copy project into container
-WORKDIR /app
+## Move to app folder, copy project into container
+WORKDIR ${HOME}
 ## REPLACE: replace this COPY statement with project specific files/folders
 COPY . . 
+
+# Check home
+RUN chown -R default:default ${HOME} && \
+    chmod -R 0750 ${HOME}
+
+USER ${USER_NAME}
 
 ## Install project requirements, build project
 RUN pip3 install --include-deps .[test,dev]
 
-## clarify permissions
-RUN chown -R default:0 /app && \
-    chmod -R g=u /app
-
 ## Expose port and run app
 EXPOSE 8080
 
-USER default
-
-# for uvicorn (FastAPI)
-CMD [ "fastapi", "run", "src/**/main.py", "--port", "8080", "--workers", "4" "--host", "0.0.0.0" ]
+#for uvicorn (FastAPI)
+CMD [ "sh", "-c", "fastapi run src/**/main.py --port 8080 --workers 4 --host 0.0.0.0" ]
 
 # for gunicorn (eg. Flask)
-# CMD [ "GUNICORN_CMD_ARGS='--bind=0.0.0.0:8080 --workers=8'","--frozen", "gunicorn", "'src/python_template/main.py'" ]
+# CMD [ "sh", "-c", "GUNICORN_CMD_ARGS='--bind=0.0.0.0:8080 --workers=8' gunicorn 'src/python_template/main.py'" ]

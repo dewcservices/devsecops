@@ -1,27 +1,44 @@
 FROM registry.access.redhat.com/ubi9/ubi:latest AS base
 
 
+ARG USER_ID=1001
+ARG GROUP_ID=1001
+ENV USER_NAME=default
+
+ENV HOME="/app"
+ENV PATH="/app/.local/bin:${PATH}"
+
 ENV container=oci
-ENV USER=default
+ENV PYTHONUNBUFFERED=1
 
 USER root
 
 # Check for package update
 RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
-# Install git, nano, python 
-dnf install git nano python3 -y; \
-# clear cache
-dnf clean all
+    # Install git, nano, python 
+    dnf install git nano python3 -y; \
+    # clear cache
+    dnf clean all
+
+WORKDIR ${HOME}
+
+# Create user and set permissions
+RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
+    useradd -u ${USER_ID} -r -g ${USER_NAME} -d ${HOME} -s /sbin/nologin ${USER_NAME} && \
+    chown -R ${USER_NAME}:${USER_NAME} ${HOME} && \
+    chmod -R 0750 ${HOME}
 
 # install poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
-ENV PYTHONUNBUFFERED=1
+
+#-----------------------------
 
 # Dev target
 FROM base AS dev
 COPY .devcontainer/devtools.sh /tmp/devtools.sh
-RUN  /tmp/devtools.sh
-USER default
+# Install extra dev tools as root, then run as default user
+RUN  /tmp/devtools.sh  
+USER ${USER_NAME}
 
 # DEPLOYMENT EXAMPLE:
 #-----------------------------
@@ -29,26 +46,26 @@ USER default
 # Prod target
 FROM base
 
-## Make App folder, copy project into container
-WORKDIR /app
+## Move to app folder, copy project into container
+WORKDIR ${HOME}
 ## REPLACE: replace this COPY statement with project specific files/folders
 COPY . . 
 
-## Install project requirements, build project
-RUN poetry python install $(cat .python-version) \
-poetry install
+# Check home
+RUN chown -R default:default ${HOME} && \
+    chmod -R 0750 ${HOME}
 
-## clarify permissions
-RUN chown -R default:0 /app && \
-    chmod -R g=u /app
+USER ${USER_NAME}
+
+## Install project requirements, build project
+RUN poetry python install $(cat .python-version); \
+    poetry install
 
 ## Expose port and run app
 EXPOSE 8080
 
-USER default
-
 #for uvicorn (FastAPI)
-CMD [ "poetry", "run", "fastapi", "run", "src/**/main.py", "--port", "8080", "--workers", "4" "--host", "0.0.0.0" ]
+CMD [ "sh", "-c", "poetry run fastapi run src/**/main.py --port 8080 --workers 4 --host 0.0.0.0" ]
 
 # for gunicorn (eg. Flask)
-# CMD [ "GUNICORN_CMD_ARGS='--bind=0.0.0.0:8080 --workers=8'", "poetry", "run", "--frozen", "gunicorn", "'src/python_template/main.py'" ]
+# CMD [ "sh", "-c", "GUNICORN_CMD_ARGS='--bind=0.0.0.0:8080 --workers=8' poetry run --frozen gunicorn 'src/python_template/main.py'" ]
