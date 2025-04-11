@@ -29,10 +29,7 @@ inputs:
     required: true
 
 
-permissions:
-  actions: read
-  contents: read
-  security-events: write
+
 
 runs:
   using: 'composite'
@@ -100,7 +97,12 @@ runs:
         
     - name: Run Semgrep scan and fail on issues
       working-directory: ${{ inputs.source_dir }}
-      run: semgrep scan --severity ERROR --severity WARNING --oss-only
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep
+      shell: bash
+    - name: Add semgrep output to action summary
+      working-directory: ${{ inputs.source_dir }}
+      run: |
+        node .github/actions/python/semgrep.js >> $GITHUB_STEP_SUMMARY
       shell: bash
         
     - name: Set up QEMU
@@ -122,21 +124,37 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
+    - name: Run Trivy vulnerability scanner sarif
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
+        format: sarif
+        output: trivy.sarif
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+    - name: Upload SARIF report to GitHub
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: trivy.sarif
+        category: Trivy
+
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
         format: template
         template: ".github/actions/python/trivy.tpl"
-        output: trivy-high-critical.md
+        output: trivy-high-critical.html
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
 
     - name: Add Trivy output to action summary
       run: |
-        echo "<h1>Trivy Results :test_tube:</h1>" >> $GITHUB_STEP_SUMMARY
-        cat trivy-high-critical.md >> $GITHUB_STEP_SUMMARY
+        echo "<h1>Trivy Results :test_tube:</h1>" >> $GITHUB_STEP_SUMMARY; \
+        cat trivy-high-critical.html >> $GITHUB_STEP_SUMMARY
       shell: bash
 
     - name: Check if repository is public or private
