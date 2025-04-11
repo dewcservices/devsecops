@@ -14,7 +14,7 @@ This repository includes several [Github Action](https://github.com/features/act
 
 ## Requirements
 
-For the pipelines to run properly, you will need a [Dockerhub](https://hub.docker.com/) account and a [Sonarcloud](https://sonarcloud.io/login) account. These are both free and can be integrated for free within public Github repositories.
+For the pipelines to run properly, you will need a [Dockerhub](https://hub.docker.com/) account. Dockerhub is free and can integrated for free within public Github repositories.
 
 ### Dockerhub (Skip if using Private repo)
 
@@ -27,21 +27,6 @@ You should be able to find this section at https://hub.docker.com/settings/secur
 Create the new access token and copy it to your clipboard. Go to your repository's **Settings**, click **Secrets and variables**, then **Actions**. Create a new repository secret named **DOCKERHUB_TOKEN** with the access token as the value.
 
 Similarly, create a new secret named **DOCKERHUB_USERNAME** and set it to your username.
-
-### Sonarcloud
-
-> **IMPORTANT**: Skip this step if you are using a private Github Repository without a paid version of Sonarcloud
-
-After creating a new Sonar cloud account, follow the [Sonarcloud docs](https://docs.sonarsource.com/sonarcloud/getting-started/github/#set-up-your-analysis) to:
-
-- connect your Github Organisation (your account in this case) to Sonarcloud
-- [Import your repository](https://docs.sonarsource.com/sonarcloud/getting-started/github/#import-repositories)
-
-Next, disable automatic analysis by going to your Sonarcloud project's **Administration** > **Analysis Method** page and turn automatic analysis **Off**.
-
-> **Note**: The pipelines will fail if automatic analysis is enabled
-
-Finally, on SonarCloud, go to **My account > Security > Generate Tokens** and generate a fresh token. Copy it and createa new secret in your Github Repository named **SONAR_TOKEN** with this token as the value.
 
 ### Dockerfile
 

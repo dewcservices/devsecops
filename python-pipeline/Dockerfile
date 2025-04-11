@@ -7,7 +7,6 @@ ENV USER_NAME=default
 ENV HOME="/app"
 ENV PATH="/app/.local/bin:${PATH}"
 
-ENV container=oci
 ENV PYTHONUNBUFFERED=1
 
 USER root
@@ -29,7 +28,7 @@ WORKDIR ${HOME}
 
 # Create user and set permissions
 RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
-    useradd -u ${USER_ID} -r -g ${USER_NAME} -d ${HOME} -s /sbin/nologin ${USER_NAME} && \
+    useradd -u ${USER_ID} -r -g ${USER_NAME} -d ${HOME} -s /bin/bash ${USER_NAME} && \
     chown -R ${USER_NAME}:${USER_NAME} ${HOME} && \
     chmod -R 0750 ${HOME}
 
@@ -39,7 +38,7 @@ RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
 FROM base AS dev
 COPY .devcontainer/devtools.sh /tmp/devtools.sh
 # Install extra dev tools as root, then run as default user
-RUN  /tmp/devtools.sh  
+RUN chmod +x devtools.sh && /tmp/devtools.sh  
 USER ${USER_NAME}
 
 # DEPLOYMENT EXAMPLE:
@@ -54,7 +53,7 @@ WORKDIR ${HOME}
 COPY . . 
 
 # Check home
-RUN chown -R default:default ${HOME} && \
+RUN chown -R ${USER_NAME}:${USER_NAME} ${HOME} && \
     chmod -R 0750 ${HOME}
 
 USER ${USER_NAME}

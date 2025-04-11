@@ -17,9 +17,11 @@ curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.rpm.sh' 
 dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
 # Install Lefthook
 dnf install lefthook -y; \
-# Install python for Semgrep & mkdocs 
-dnf install python3 python3-pip -y; \
-python3 -m pip install semgrep mkdocs; \
+# Install python for Semgrep, Install gnupg2 for GPG pass-through
+# For ssh git support, uncomment `AllowAgentForwarding yes` in /etc/ssh/sshd_config on your host 
+dnf install python3 python3-pip gnupg2 -y; \
+# Optional: mkdocs
+python3 -m pip install semgrep; \
 # Install trivy package
 dnf install trivy -y; \
 # Clean package cache

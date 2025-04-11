@@ -26,6 +26,7 @@
 		  // Add the IDs of extensions you want installed when the container is created.
 		  "extensions": [
 			"vscjava.vscode-maven",
+			"redhat.java",
 			"vscjava.vscode-java-pack",
 			"vscjava.vscode-java-test",
 			"vscjava.vscode-java-dependency",
@@ -49,8 +50,7 @@
 			},
 			 "editor.tabSize": 4,
 			 "workbench.tree.indent": 14,
-			 "trivy.offlineScan": true,
-             "terminal.integrated.defaultProfile.linux": "zsh",
+			 "trivy.offlineScan": true             
 			 //"files.autoSaveWhenNoErrors": true,
 			 //"files.autoSaveWorkspaceFilesOnly": true
 		  }

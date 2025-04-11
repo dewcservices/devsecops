@@ -28,6 +28,7 @@
 		"vscode": {
 		  "extensions": [
 			"rust-lang.rust-analyzer",
+			// "ms-vscode.anycode-rust",
 			// optional
 			"ms-azuretools.vscode-docker",
 			"Semgrep.semgrep",
@@ -48,8 +49,7 @@
 			},
 			 "editor.tabSize": 4,
 			 "workbench.tree.indent": 14,
-			 "trivy.offlineScan": true,
-             "terminal.integrated.defaultProfile.linux": "zsh",
+			 "trivy.offlineScan": true          
 			 //"files.autoSaveWhenNoErrors": true,
 			 //"files.autoSaveWorkspaceFilesOnly": true,
 		  }

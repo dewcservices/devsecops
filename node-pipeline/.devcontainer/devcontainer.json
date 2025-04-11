@@ -27,9 +27,13 @@
 			"dbaeumer.vscode-eslint",
 			"ms-vscode.vscode-typescript-next",
 			"ms-vscode.vscode-typescript",
-			// optional
-			"firefox-devtools.vscode-firefox-debug",
 			"Angular.ng-template",
+			// Vue
+			// "Vue.volar",
+			// React
+			// "msjsdiag.vscode-react-native",
+			// Optional
+			"firefox-devtools.vscode-firefox-debug",
 			"ms-azuretools.vscode-docker",
 			"Semgrep.semgrep",
 			"AquaSecurityOfficial.trivy-vulnerability-scanner",
@@ -49,8 +53,7 @@
 			},
 			 "editor.tabSize": 4,
 			 "workbench.tree.indent": 14,
-			 "trivy.offlineScan": true,
-             "terminal.integrated.defaultProfile.linux": "zsh",
+			 "trivy.offlineScan": true  
 			 //"files.autoSaveWhenNoErrors": true,
 			 //"files.autoSaveWorkspaceFilesOnly": true
 		  }

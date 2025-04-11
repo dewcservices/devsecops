@@ -28,6 +28,7 @@
 			"ms-python.python",
 			"charliermarsh.ruff",
 			// optional
+			"ms-python.mypy-type-checker", //replace with Red Knot when released
 			"ms-azuretools.vscode-docker",
 			"Semgrep.semgrep",
 			"AquaSecurityOfficial.trivy-vulnerability-scanner",
@@ -47,8 +48,7 @@
 			},
 			 "editor.tabSize": 4,
 			 "workbench.tree.indent": 14,
-			 "trivy.offlineScan": true,
-             "terminal.integrated.defaultProfile.linux": "zsh",
+			 "trivy.offlineScan": true           
 			 //"files.autoSaveWhenNoErrors": true,
 			 //"files.autoSaveWorkspaceFilesOnly": true
 		  }
