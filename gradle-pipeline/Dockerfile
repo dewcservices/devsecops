@@ -22,9 +22,7 @@ WORKDIR ${HOME}
 
 # Create user and set permissions
 RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
-    useradd -u ${USER_ID} -r -g ${USER_NAME} -d ${HOME} -s /bin/bash ${USER_NAME} && \
-    chown -R ${USER_NAME}:${USER_NAME} ${HOME} && \
-    chmod -R 0750 ${HOME}
+    useradd -u ${USER_ID} -r -g ${USER_NAME} -d ${HOME} -s /bin/bash ${USER_NAME} 
 
 #-----------------------------
 
