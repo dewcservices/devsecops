@@ -1,4 +1,4 @@
-name: Angular CI Workflow
+name: Node CI Workflow
 
 on: [push]
 
@@ -23,7 +23,7 @@ jobs:
       with:
         fetch-depth: 0  
 
-    - name: Run Custom Angular.js action
+    - name: Run Custom Nodejs action
       uses: ./.github/actions/node
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
