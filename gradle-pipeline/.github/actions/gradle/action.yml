@@ -91,7 +91,7 @@ runs:
     - name: Add semgrep output to action summary
       working-directory: ${{ inputs.source_dir }}
       run: |
-        node .github/actions/python/semgrep.js >> $GITHUB_STEP_SUMMARY
+        node .github/actions/gradle/semgrep.js >> $GITHUB_STEP_SUMMARY
       shell: bash
 
     - name: Add QEMU support
