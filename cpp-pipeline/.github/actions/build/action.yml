@@ -20,8 +20,6 @@ runs:
   using: 'composite'
   steps:
 
-
-
     - name: Checkout code
       uses: actions/checkout@v4
       with:
@@ -40,6 +38,31 @@ runs:
       run: |
         sudo apt-get install -y build-essential cmake meson ninja-build git libboost-dev libboost-system-dev
       shell: bash
+
+    - name: "Run scanner"
+      uses: google/osv-scanner-action/osv-scanner-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.json
+          --format=json
+          -r
+          ${{ inputs.source_dir }}/
+      continue-on-error: true
+    - name: "Run osv-scanner-reporter"
+      uses: google/osv-scanner-action/osv-reporter-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.sarif
+          --new=results.json
+          --gh-annotations=true
+          --fail-on-vuln=true
+    - name: "Upload artifact"
+      id: "upload_artifact"
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: SARIF file
+        path: results.sarif
+        retention-days: 5
 
     - name: Configure CMake
       run: cmake -S ${{ inputs.source_dir }} -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Release -G "${{ inputs.build_system }}"

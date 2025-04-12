@@ -13,8 +13,6 @@ runs:
   using: 'composite'
   steps:
 
-
-
     - name: Checkout code
       uses: actions/checkout@v4
       with:
@@ -33,6 +31,31 @@ runs:
       run: cargo build --profile release --verbose --workspace
       shell: bash
     
+    - name: "Run scanner"
+      uses: google/osv-scanner-action/osv-scanner-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.json
+          --format=json
+          -r
+          ${{ inputs.source_dir }}/
+      continue-on-error: true
+    - name: "Run osv-scanner-reporter"
+      uses: google/osv-scanner-action/osv-reporter-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.sarif
+          --new=results.json
+          --gh-annotations=true
+          --fail-on-vuln=true
+    - name: "Upload artifact"
+      id: "upload_artifact"
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: SARIF file
+        path: results.sarif
+        retention-days: 5
+        
     - name: Run tests in release mode
       run: cargo test --profile release --verbose --workspace
       shell: bash
@@ -42,6 +65,7 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+
     - name: Install Semgrep
       run: pip install semgrep
       shell: bash
