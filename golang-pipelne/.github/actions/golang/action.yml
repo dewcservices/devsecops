@@ -145,7 +145,7 @@ runs:
       with:
         image-ref: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
         format: template
-        template: ".github/actions/python/trivy.tpl"
+        template: ".github/actions/golang/trivy.tpl"
         output: trivy-high-critical.html
         ignore-unfixed: true
         vuln-type: 'os,library'
