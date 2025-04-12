@@ -1,0 +1,81 @@
+name: Maven CI
+description: 'Builds, tests, and deploys a Maven application'
+
+inputs:
+  github_token:
+    description: 'Automatically created token. Set this to the GITHUB_TOKEN secret'
+    required: true
+  gitleaks_token:
+    description: 'Organisational token for Gitleaks'
+    required: false # only required for Organizations, not personal accounts
+  java_version:
+    description: 'Java Version'
+    required: true
+  source_dir:
+    description: 'Source directory for the Maven application'
+    required: true
+    default: '.'
+
+runs:
+  using: 'composite'
+  steps:
+
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0   
+
+    - name: Validate conventional commits
+      uses: wagoid/commitlint-github-action@v6    
+
+    - name: Scan for secrets
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITLEAKS_LICENSE: ${{ inputs.gitleaks_token }}
+
+    - name: Install Java & Maven
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ inputs.java_version }}
+        cache: maven
+
+    - name: Build with Maven
+      run: mvn clean install -DskipTests
+      shell: bash
+      working-directory: ${{ inputs.source_dir }}
+
+    - name: Run maven tests
+      run: mvn org.apache.maven.plugins:maven-surefire-plugin:test
+      shell: bash
+      working-directory: ${{ inputs.source_dir }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install Semgrep
+      run: pip install semgrep
+      shell: bash
+    - name: Run Semgrep scan and output to Github Security
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --sarif -o ${{ github.workspace }}/semgrep-output.sarif --oss-only --metrics=off
+      shell: bash
+    - name: Upload SARIF report to GitHub (even if previous step failed)
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep-output.sarif
+        category: semgrep
+        
+    - name: Run Semgrep scan and fail on issues
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep --metrics=off
+      shell: bash
+    - name: Add semgrep output to action summary
+      working-directory: ${{ inputs.source_dir }}
+      run: |
+        node .github/actions/build/semgrep.js >> $GITHUB_STEP_SUMMARY
+      shell: bash

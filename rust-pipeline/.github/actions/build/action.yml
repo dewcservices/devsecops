@@ -1,0 +1,67 @@
+name: Rust CI
+description: 'Builds, tests, and pushes a Python image using a requirements.txt for dependency installation'
+
+inputs:
+  github_token:
+    description: 'Automatically created token. Set this to the GITHUB_TOKEN secret'
+    required: true
+  gitleaks_token:
+    description: 'Organisational token for Gitleaks'
+    required: false # only required for Organizations, not personal accounts
+  
+runs:
+  using: 'composite'
+  steps:
+
+
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0   
+
+    - name: Validate conventional commits
+      uses: wagoid/commitlint-github-action@v6    
+
+    - name: Scan for secrets
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITLEAKS_LICENSE: ${{ inputs.gitleaks_token }}
+
+    - name: Build binaries in release mode
+      run: cargo build --profile release --verbose --workspace
+      shell: bash
+    
+    - name: Run tests in release mode
+      run: cargo test --profile release --verbose --workspace
+      shell: bash
+
+    # Install and run Semgrep scan
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install Semgrep
+      run: pip install semgrep
+      shell: bash
+    - name: Run Semgrep scan and output to Github Security
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --sarif -o ${{ github.workspace }}/semgrep-output.sarif --oss-only --metrics=off
+      shell: bash
+    - name: Upload SARIF report to GitHub (even if previous step failed)
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep-output.sarif
+        category: semgrep
+        
+    - name: Run Semgrep scan and fail on issues
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep --metrics=off
+      shell: bash
+    - name: Add semgrep output to action summary
+      working-directory: ${{ inputs.source_dir }}
+      run: |
+        node .github/actions/build/semgrep.js >> $GITHUB_STEP_SUMMARY
+      shell: bash

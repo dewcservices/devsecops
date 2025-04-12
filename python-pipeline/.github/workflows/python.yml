@@ -26,13 +26,22 @@ jobs:
         fetch-depth: 0
 
     - name: Run Custom Python CI action
-      uses: ./.github/actions/python
+      uses: ./.github/actions/build
       with: 
         github_token: ${{ secrets.GITHUB_TOKEN }}
         source_dir: ${{ env.PYTHON_APP_SOURCE_DIR }}
         gitleaks_token: ${{ secrets.GITLEAKS_TOKEN }}
-        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
-        docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
         pytest_coverage_xml_file_name: ${{ env.PYTEST_COVERAGE_XML_FILE_NAME }}
         pytest_coverage_threshold_percent: ${{ env.PYTEST_COVERAGE_THRESHOLD_PERCENT }}
+
+    - name: Test Dockerfile 
+      uses: ./.github/actions/test
+      with:
+        docker_repo_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
+    
+    - name: Deploy Dockerfile 
+      if: ${{ github.ref_name == 'main' && github.event_name == 'push' }}
+      uses: ./.github/actions/test
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        docker_repo_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}

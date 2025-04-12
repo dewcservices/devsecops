@@ -25,12 +25,21 @@ jobs:
         fetch-depth: 0  
 
     - name: Run Custom Gradle action
-      uses: ./.github/actions/gradle
+      uses: ./.github/actions/build
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         gitleaks_token: ${{ secrets.GITLEAKS_TOKEN }}
         java_version: 17
-        docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
-        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
         source_dir: ${{ env.GRADLE_APP_SOURCE_DIR }}
+
+    - name: Test Dockerfile 
+      uses: ./.github/actions/test
+      with:
+        docker_repo_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
+
+    - name: Deploy Dockerfile 
+      if: ${{ github.ref_name == 'main' && github.event_name == 'push' }}
+      uses: ./.github/actions/test
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        docker_repo_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
