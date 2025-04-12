@@ -1,0 +1,35 @@
+name: Maven CI Workflow
+
+on: [push]
+
+env:
+  DOCKER_IMAGE_NAME: ""
+  MAVEN_APP_SOURCE_DIR: "."
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      packages: write
+      actions: read
+      security-events: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  
+
+    - name: Run Custom Maven action
+      uses: ./.github/actions/maven
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        gitleaks_token: ${{ secrets.GITLEAKS_TOKEN }}
+        java_version: 21
+        docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
+        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+        source_dir: ${{ env.MAVEN_APP_SOURCE_DIR }}

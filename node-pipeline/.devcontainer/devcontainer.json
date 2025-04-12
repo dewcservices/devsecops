@@ -1,0 +1,62 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+{
+	"name": "nodejs-devcontainer",
+	"build": {
+		"dockerfile": "../Dockerfile",
+		"context": "../",
+		"target": "dev"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+	},
+	// uncomment if the app/source directory is in a sub folder
+	// "workspaceMount": "source=${localWorkspaceFolder}/myApp,target=/workspace,type=bind",
+	// "workspaceFolder": "/workspace",
+
+	// may be needed for Podman
+	"runArgs": [
+		"--userns=keep-id",
+		"--pid=host"
+	],
+
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+		  // Add the IDs of extensions you want installed when the container is created.
+		  "extensions": [
+			"dbaeumer.vscode-eslint",
+			"ms-vscode.vscode-typescript-next",
+			"ms-vscode.vscode-typescript",
+			"Angular.ng-template",
+			// Vue
+			// "Vue.volar",
+			// React
+			// "msjsdiag.vscode-react-native",
+			// Optional
+			"firefox-devtools.vscode-firefox-debug",
+			"ms-azuretools.vscode-docker",
+			"Semgrep.semgrep",
+			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"GitHub.vscode-github-actions",
+			"eamodio.gitlens",
+			"redhat.vscode-yaml",
+			"redhat.vscode-xml",
+			"ecmel.vscode-html-css",
+			"bierner.markdown-mermaid",
+			"esbenp.prettier-vscode",
+			"mechatroner.rainbow-csv",
+			"editorconfig.editorconfig"
+		],
+		  "settings": {
+			"[typescript]": {
+			  "editor.defaultFormatter": "ms-vscode.vscode-typescript-next",
+			},
+			 "editor.tabSize": 4,
+			 "workbench.tree.indent": 14,
+			 "trivy.offlineScan": true  
+			 //"files.autoSaveWhenNoErrors": true,
+			 //"files.autoSaveWorkspaceFilesOnly": true
+		  }
+		}
+	  }
+	}

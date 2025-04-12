@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "python_template"
+version = "0.1.0"
+description = "A simple FastAPI Python template with Poetry"
+readme = "README.md"
+authors = []
+
+packages = [{ include = "python_template", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+fastapi = { version = ">=0.115.11", extras = ["standard"] }
+pydantic = ">=2.10.6"
+swagger-ui = ">=0.1.2"
+uvicorn = { version = ">=0.34.0", extras = ["standard"] }
+waitress = ">=3.0.2"
+
+[tool.poetry.group.dev.dependencies]
+black = ">=23.10.0"
+flake8 = ">=6.1.0"
+mypy = ">=1.6.0"
+pytest = ">=7.3.1"
+pytest-cov = ">=4.1.0"
+types-waitress = "*"
+bandit = "^1.8.3"
+
+[tool.poetry.scripts]
+python_template = "python_template.main:main"
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = ["E203"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.mypy]
+python_version = "3.11"
+show_error_codes = true
+pretty = true
+strict = true
+
+[tool.coverage.run]
+branch = true
+source = ["python_template"]
+omit = ["python_template/templates/*"] 
+
+[tool.coverage.paths]
+source = ["python_template"]
+

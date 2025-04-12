@@ -1,0 +1,38 @@
+name: Python CI Pipeline
+
+on: [push]
+
+env:
+  DOCKER_IMAGE_NAME: ""
+  PYTHON_APP_SOURCE_DIR: "."
+  PYTEST_COVERAGE_XML_FILE_NAME: "coverage-reports/coverage-pytest.xml"
+  PYTEST_COVERAGE_THRESHOLD_PERCENT: 50
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      packages: write
+      actions: read
+      security-events: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Run Custom Python CI action
+      uses: ./.github/actions/python
+      with: 
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        source_dir: ${{ env.PYTHON_APP_SOURCE_DIR }}
+        gitleaks_token: ${{ secrets.GITLEAKS_TOKEN }}
+        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+        docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
+        pytest_coverage_xml_file_name: ${{ env.PYTEST_COVERAGE_XML_FILE_NAME }}
+        pytest_coverage_threshold_percent: ${{ env.PYTEST_COVERAGE_THRESHOLD_PERCENT }}
