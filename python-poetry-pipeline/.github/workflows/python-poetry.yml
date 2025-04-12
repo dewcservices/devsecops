@@ -41,7 +41,7 @@ jobs:
     
     - name: Deploy Dockerfile 
       if: ${{ github.ref_name == 'main' && github.event_name == 'push' }}
-      uses: ./.github/actions/test
+      uses: ./.github/actions/deploy
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         docker_repo_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
