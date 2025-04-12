@@ -40,6 +40,10 @@ jobs:
       - build
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Test Dockerfile 
       uses: ./.github/actions/test
       with:
@@ -50,6 +54,10 @@ jobs:
       - test
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Deploy Dockerfile 
       if: ${{ github.ref_name == 'main' && github.event_name == 'push' }}
       uses: ./.github/actions/deploy

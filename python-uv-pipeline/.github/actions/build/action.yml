@@ -31,8 +31,6 @@ runs:
   using: 'composite'
   steps:
 
-
-
     - name: Checkout code
       uses: actions/checkout@v4
       with:
@@ -95,7 +93,7 @@ runs:
         name: SARIF file
         path: results.sarif
         retention-days: 5
-        
+
     - name: Check Format with ruf
       uses: astral-sh/ruff-action@v3
       with:
