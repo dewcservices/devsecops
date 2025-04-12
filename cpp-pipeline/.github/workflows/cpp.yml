@@ -6,24 +6,24 @@ env:
   DOCKER_IMAGE_NAME: ""
   PROJECT_DIR: "."
   BUILD_SYSTEM: "Ninja"
-  
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+  packages: write
+  actions: read
+  security-events: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      id-token: write
-      packages: write
-      actions: read
-      security-events: write
     steps:
     - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-
     - name: Run Custom Build CI action
       uses: ./.github/actions/build
       with: 
@@ -32,11 +32,21 @@ jobs:
         source_dir:  ${{ env.PROJECT_DIR }}
         build_system: ${{env.BUILD_SYSTEM}}
 
+  test:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
     - name: Test Dockerfile 
       uses: ./.github/actions/test
       with:
         docker_repo_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
-
+        
+  deploy:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
     - name: Deploy Dockerfile 
       if: ${{ github.ref_name == 'main' && github.event_name == 'push' }}
       uses: ./.github/actions/deploy

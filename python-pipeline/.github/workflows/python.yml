@@ -7,18 +7,19 @@ env:
   PYTHON_APP_SOURCE_DIR: "."
   PYTEST_COVERAGE_XML_FILE_NAME: "coverage-reports/coverage-pytest.xml"
   PYTEST_COVERAGE_THRESHOLD_PERCENT: 50
-  
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+  packages: write
+  actions: read
+  security-events: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      id-token: write
-      packages: write
-      actions: read
-      security-events: write
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -34,11 +35,21 @@ jobs:
         pytest_coverage_xml_file_name: ${{ env.PYTEST_COVERAGE_XML_FILE_NAME }}
         pytest_coverage_threshold_percent: ${{ env.PYTEST_COVERAGE_THRESHOLD_PERCENT }}
 
+  test:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
     - name: Test Dockerfile 
       uses: ./.github/actions/test
       with:
         docker_repo_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
-    
+
+  deploy:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
     - name: Deploy Dockerfile 
       if: ${{ github.ref_name == 'main' && github.event_name == 'push' }}
       uses: ./.github/actions/deploy

@@ -6,17 +6,18 @@ env:
   DOCKER_IMAGE_NAME: ""
   MAVEN_APP_SOURCE_DIR: "."
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+  packages: write
+  actions: read
+  security-events: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      id-token: write
-      packages: write
-      actions: read
-      security-events: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -31,11 +32,21 @@ jobs:
         java_version: 21
         source_dir: ${{ env.MAVEN_APP_SOURCE_DIR }}
 
+  test:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
     - name: Test Dockerfile 
       uses: ./.github/actions/test
       with:
         docker_repo_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
-  
+        
+  deploy:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
     - name: Deploy Dockerfile 
       if: ${{ github.ref_name == 'main' && github.event_name == 'push' }}
       uses: ./.github/actions/deploy
