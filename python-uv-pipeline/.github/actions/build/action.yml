@@ -1,0 +1,160 @@
+name: Python UV CI
+description: 'Builds, tests, and pushes a Python image with uv package management'
+
+inputs:
+  github_token:
+    description: 'Automatically created token. Set this to the GITHUB_TOKEN secret'
+    required: true
+  gitleaks_token:
+    description: 'Organizational token for Gitleaks'
+    required: false # only required for Organizations, not personal accounts
+  source_dir:
+    description: 'Source directory for the python application'
+    required: true
+  pytest_coverage_xml_file_name:
+    description: 'PyTest coverage report path'
+    required: false
+    default: 'coverage-reports/coverage-pytest.xml'
+  pytest_coverage_threshold_percent:
+    description: 'Fails if coverage is under this percent'
+    required: false
+    default: 50
+  uv_packages:
+    description: 'Additional uv tool packages to install independently using uv'
+    required: false
+    default: ''
+
+env:
+  UV_SYSTEM_PYTHON: 1
+
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0   
+
+    - name: Validate conventional commits
+      uses: wagoid/commitlint-github-action@v6    
+
+    - name: Scan for secrets
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITLEAKS_LICENSE: ${{ inputs.gitleaks_token }}
+
+    - name: Install uv
+      id: install_uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+        cache-dependency-glob: "uv.lock"
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      id: setup_python
+      with:
+        python-version-file: ".python-version"
+
+    - name: Debug uv
+      run: |
+        pipx ensurepath # uv should be in the same path
+        uv tree
+      shell: bash
+
+    - name: Install uv dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: uv sync --all-extras --dev
+      shell: bash
+
+    - name: "Run scanner"
+      uses: google/osv-scanner-action/osv-scanner-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.json
+          --format=json
+          -r
+          ${{ inputs.source_dir }}/
+      continue-on-error: true
+    - name: "Run osv-scanner-reporter"
+      uses: google/osv-scanner-action/osv-reporter-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.sarif
+          --new=results.json
+          --gh-annotations=true
+          --fail-on-vuln=true
+    - name: "Upload artifact"
+      id: "upload_artifact"
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: SARIF file
+        path: results.sarif
+        retention-days: 5
+
+    - name: Check Format with ruf
+      uses: astral-sh/ruff-action@v3
+      with:
+        args: "format --check"
+        src: "./${{ inputs.source_dir }}"
+
+    - name: Install '${{ steps.variable_setup.outputs.uv_packages }} mypy pytest-cov'
+      run: |
+        uv pip install pytest-cov ${{ steps.variable_setup.outputs.uv_packages }}
+        uv tool install mypy
+      shell: bash
+
+    - name: Parse PyTest coverage xml file name option
+      shell: bash
+      if: ${{ inputs.pytest_coverage_xml_file_name }} != ''
+      run: |
+        echo "pytest_report_name_options=$(echo '--cov-report=xml:${{ inputs.pytest_coverage_xml_file_name }} --cov-report=term-missing:skip-covered')" >> $GITHUB_ENV
+
+    - name: Parse PyTest coverage fail percent option
+      shell: bash
+      if: ${{ inputs.pytest_coverage_threshold_percent }} != 0
+      run: |
+        echo "pytest_fail_percent_options=$(echo '--cov-fail-under=${{ inputs.pytest_coverage_threshold_percent }}')" >> $GITHUB_ENV
+
+    - name: Test with PyTest-cov
+      shell: bash
+      run: |
+        uv run pytest --cov=${{ inputs.source_dir }} ${{ env.pytest_report_name_options }} ${{ env.pytest_fail_percent_options }}
+
+    - name: Type Check with Mypy
+      shell: bash
+      run: |
+        uv run mypy ${{ inputs.source_dir }}
+
+    - name: Override Coverage Source Path
+      if: ${{ inputs.pytest_coverage_xml_file_name }} != ''
+      shell: bash
+      run: |
+        sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' $GITHUB_WORKSPACE/${{ inputs.pytest_coverage_xml_file_name }}
+
+    # Install and run Semgrep scan
+    - name: Install Semgrep
+      run: pip install semgrep
+      shell: bash
+    - name: Run Semgrep scan and output to Github Security
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --sarif -o ${{ github.workspace }}/semgrep-output.sarif --oss-only 
+      shell: bash
+    - name: Upload SARIF report to GitHub (even if previous step failed)
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep-output.sarif
+        category: semgrep
+        
+    - name: Run Semgrep scan and fail on issues
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep 
+      shell: bash
+    - name: Add semgrep output to action summary
+      working-directory: ${{ inputs.source_dir }}
+      run: |
+        node .github/actions/build/semgrep.js >> $GITHUB_STEP_SUMMARY
+      shell: bash

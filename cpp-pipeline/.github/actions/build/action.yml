@@ -1,0 +1,107 @@
+name: CPP CI
+description: 'Builds, tests, and pushes a C++ image'
+
+inputs:
+  github_token:
+    description: 'Automatically created token. Set this to the GITHUB_TOKEN secret'
+    required: true
+  gitleaks_token:
+    description: 'Organisational token for Gitleaks'
+    required: false # only required for Organizations, not personal accounts
+  source_dir:
+    description: 'Source directory for the c++ application'
+    required: true
+    default: "."
+  build_system:
+    description: 'C build system to use'
+    default: 'Ninja'
+    
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0   
+
+    - name: Validate conventional commits
+      uses: wagoid/commitlint-github-action@v6    
+
+    - name: Scan for secrets
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITLEAKS_LICENSE: ${{ inputs.gitleaks_token }}
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y build-essential cmake meson ninja-build git libboost-dev libboost-system-dev
+      shell: bash
+
+    - name: "Run scanner"
+      uses: google/osv-scanner-action/osv-scanner-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.json
+          --format=json
+          -r
+          ${{ inputs.source_dir }}/
+      continue-on-error: true
+    - name: "Run osv-scanner-reporter"
+      uses: google/osv-scanner-action/osv-reporter-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.sarif
+          --new=results.json
+          --gh-annotations=true
+          --fail-on-vuln=true
+    - name: "Upload artifact"
+      id: "upload_artifact"
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: SARIF file
+        path: results.sarif
+        retention-days: 5
+
+    - name: Configure CMake
+      run: cmake -S ${{ inputs.source_dir }} -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Release -G "${{ inputs.build_system }}"
+      shell: bash
+
+    - name: Build
+      run: |
+        cmake --build build --config Release
+      shell: bash
+
+    - name: Test with ctest
+      run: ctest --test-dir build --build-config Release --output-on-failure
+      shell: bash
+
+    # Install and run Semgrep scan
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install Semgrep
+      run: pip install semgrep
+      shell: bash
+    - name: Run Semgrep scan and output to Github Security
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --sarif -o ${{ github.workspace }}/semgrep-output.sarif --oss-only 
+      shell: bash
+    - name: Upload SARIF report to GitHub (even if previous step failed)
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep-output.sarif
+        category: semgrep
+        
+    - name: Run Semgrep scan and fail on issues
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep 
+      shell: bash
+    - name: Add semgrep output to action summary
+      working-directory: ${{ inputs.source_dir }}
+      run: |
+        node .github/actions/build/semgrep.js >> $GITHUB_STEP_SUMMARY
+      shell: bash

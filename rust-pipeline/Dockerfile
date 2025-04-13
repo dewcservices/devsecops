@@ -36,7 +36,7 @@ RUN . $CARGO_HOME/env && rustup default stable
 FROM base AS dev
 COPY .devcontainer/devtools.sh /tmp/devtools.sh
 # Install extra dev tools as root, then run as default user
-RUN chmod +x devtools.sh && /tmp/devtools.sh 
+RUN chmod +x /tmp/devtools.sh && /tmp/devtools.sh 
 USER ${USER_NAME}
 
 # DEPLOYMENT EXAMPLE:

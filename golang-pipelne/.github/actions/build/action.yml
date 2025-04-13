@@ -1,0 +1,118 @@
+name: Golang CI
+description: 'Builds, tests, and pushes a Python image using a requirements.txt for dependency installation'
+
+inputs:
+  github_token:
+    description: 'Automatically created token. Set this to the GITHUB_TOKEN secret'
+    required: true
+  gitleaks_token:
+    description: 'Organisational token for Gitleaks'
+    required: false # only required for Organizations, not personal accounts
+  source_dir:
+    description: 'Source directory for the Golang application'
+    required: true
+    default: "."
+  golang_packages:
+    description: 'Extra Golang dependencies to install'
+    required: true
+  golang_version:
+    description: 'Golang Version'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+
+
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0   
+
+    - name: Validate conventional commits
+      uses: wagoid/commitlint-github-action@v6    
+
+    - name: Scan for secrets
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITLEAKS_LICENSE: ${{ inputs.gitleaks_token }}
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ inputs.golang_version }}
+
+    - name: Install Package dependencies
+      run: go get ${{ inputs.source_dir }}
+      shell: bash
+
+    - name: "Run scanner"
+      uses: google/osv-scanner-action/osv-scanner-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.json
+          --format=json
+          -r
+          ${{ inputs.source_dir }}/
+      continue-on-error: true
+    - name: "Run osv-scanner-reporter"
+      uses: google/osv-scanner-action/osv-reporter-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.sarif
+          --new=results.json
+          --gh-annotations=true
+          --fail-on-vuln=true
+    - name: "Upload artifact"
+      id: "upload_artifact"
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: SARIF file
+        path: results.sarif
+        retention-days: 5
+
+    - name: Install input Package dependencies
+      if:  ${{ inputs.job-golang_packages != '' }}
+      run: go get ${{ inputs.golang_packages }}
+      shell: bash
+
+    - name: Build Package
+      run: go build -v ${{ inputs.source_dir }}/...
+      shell: bash
+
+    - name: Test
+      run: go test -json -coverprofile=cover.out ${{ inputs.source_dir }}/... > result.json
+      shell: bash
+
+    # Install and run Semgrep scan
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install Semgrep
+      run: pip install semgrep
+      shell: bash
+    - name: Run Semgrep scan and output to Github Security
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --sarif -o ${{ github.workspace }}/semgrep-output.sarif --oss-only 
+      shell: bash
+    - name: Upload SARIF report to GitHub (even if previous step failed)
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep-output.sarif
+        category: semgrep
+        
+    - name: Run Semgrep scan and fail on issues
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep 
+      shell: bash
+    - name: Add semgrep output to action summary
+      working-directory: ${{ inputs.source_dir }}
+      run: |
+        node .github/actions/build/semgrep.js >> $GITHUB_STEP_SUMMARY
+      shell: bash
+
+

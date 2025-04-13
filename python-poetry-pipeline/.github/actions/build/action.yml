@@ -8,15 +8,7 @@ inputs:
   gitleaks_token:
     description: 'Organisational token for Gitleaks'
     required: false # only required for Organizations, not personal accounts
-  dockerhub_username:
-    description: 'Username for the Dockerhub account'
-    required: true
-  dockerhub_token:
-    description: 'Access token for the Dockerhub account'
-    required: true
-  docker_image_name:
-    description: 'Docker image name'
-    required: true
+  
   source_dir:
     description: 'Source directory for the python application'
     required: true
@@ -41,16 +33,11 @@ inputs:
     required: false
     default: ''
 
-
-
 runs:
   using: 'composite'
   steps:
 
-    - name: Extract branch name
-      id: branch-names
-      shell: bash
-      run: echo "current_branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -96,6 +83,31 @@ runs:
         poetry self add setuptools==68.1.2
         pipx inject flake8 flake8-bugbear
       shell: bash
+
+    - name: "Run scanner"
+      uses: google/osv-scanner-action/osv-scanner-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.json
+          --format=json
+          -r
+          ${{ inputs.source_dir }}/
+      continue-on-error: true
+    - name: "Run osv-scanner-reporter"
+      uses: google/osv-scanner-action/osv-reporter-action@19734b480e0819e9fe058cb345d77fa08c55189f # v2.0.1
+      with:
+        scan-args: |-
+          --output=results.sarif
+          --new=results.json
+          --gh-annotations=true
+          --fail-on-vuln=true
+    - name: "Upload artifact"
+      id: "upload_artifact"
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      with:
+        name: SARIF file
+        path: results.sarif
+        retention-days: 5
 
     - name: Debug pipx
       run: |
@@ -186,7 +198,7 @@ runs:
       shell: bash
     - name: Run Semgrep scan and output to Github Security
       working-directory: ${{ inputs.source_dir }}
-      run: semgrep scan --sarif -o ${{ github.workspace }}/semgrep-output.sarif --oss-only
+      run: semgrep scan --sarif -o ${{ github.workspace }}/semgrep-output.sarif --oss-only 
       shell: bash
     - name: Upload SARIF report to GitHub (even if previous step failed)
       if: always()
@@ -197,143 +209,10 @@ runs:
         
     - name: Run Semgrep scan and fail on issues
       working-directory: ${{ inputs.source_dir }}
-      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep 
       shell: bash
     - name: Add semgrep output to action summary
       working-directory: ${{ inputs.source_dir }}
       run: |
-        node .github/actions/python-poetry/semgrep.js >> $GITHUB_STEP_SUMMARY
+        node .github/actions/build/semgrep.js >> $GITHUB_STEP_SUMMARY
       shell: bash
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Format test image tag for caching
-      run: |
-        echo "formatted_branch_name=$(echo ${{ steps.branch-names.outputs.current_branch }} | sed 's/\//-/g')" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Build Docker image for testing
-      uses: docker/build-push-action@v6
-      with:
-        load: true
-        tags: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-
-
-    - name: Run Trivy vulnerability scanner sarif
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
-        format: sarif
-        output: trivy.sarif
-        ignore-unfixed: true
-        vuln-type: 'os,library'
-        severity: 'CRITICAL,HIGH'
-    - name: Upload SARIF report to GitHub
-      if: always()
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: trivy.sarif
-        category: Trivy
-
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
-        format: template
-        template: "@.github/actions/python-poetry/trivy.tpl"
-        output: trivy-high-critical.html
-        ignore-unfixed: true
-        vuln-type: 'os,library'
-        severity: 'CRITICAL,HIGH'
-
-    - name: Add Trivy output to action summary
-      run: |
-        echo "<h1>Trivy Results :test_tube:</h1>" >> $GITHUB_STEP_SUMMARY; \
-        cat trivy-high-critical.html >> $GITHUB_STEP_SUMMARY
-      shell: bash
-
-    - name: Check if repository is public or private
-      run: |
-        curl -H "Authorization: token ${{ inputs.github_token }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}" > repo_details.json
-        echo "private_repo=$(jq -r '.private' repo_details.json)" >> $GITHUB_ENV
-      shell: bash
-
-    - name: Login to dockerhub
-      if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' && env.private_repo == 'false' }} 
-      uses: docker/login-action@v3
-      with:
-        username: ${{ inputs.dockerhub_username }}
-        password: ${{ inputs.dockerhub_token }}
-
-    - name: Login to GitHub Container Registry
-      if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' && env.private_repo == 'true' }} 
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ inputs.github_token }}
-
-    - name: Create package.json for Semantic Release
-      shell: bash
-      run: |
-        if [ ! -f "package.json" ]; then
-        echo '{
-          "name": "test-app",
-          "version": "0.0.0",
-          "private": true
-        }' > package.json
-        fi
-
-    - name: Semantic Release
-      if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' }} 
-      uses: cycjimmy/semantic-release-action@v4
-      id: semantic
-      with:
-        branch: main
-        ci: true
-      env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-
-    - name: Set image tag and name
-      if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' }}
-      run: |
-        # set image tag
-        if [[ $(echo ${{ steps.semantic.outputs.new_release_published }}) = "true" ]]; then
-          echo "image_tag=$(echo ${{ steps.semantic.outputs.new_release_version }})" >> $GITHUB_ENV
-        else
-          echo "image_tag=$(echo $(git describe --tags --abbrev=0 | sed 's/^v//'))" >> $GITHUB_ENV
-        fi
-
-        # set image name
-        if [[ ${{ env.private_repo }} = "true" ]]; then
-          echo "image_name=$(echo ghcr.io/${{ github.repository_owner }}/${{ inputs.docker_image_name }})" >> $GITHUB_ENV
-        else
-          echo "image_name=$(echo ${{ inputs.dockerhub_username }}/${{ inputs.docker_image_name }})" >> $GITHUB_ENV
-        fi       
-      shell: bash
-
-    - name: Extract metadata (tags, labels) for Docker
-      if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' }}
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.image_name }}
-        tags: |
-          ${{ env.image_tag }}
-          latest
-        
-    - name: Build and push image
-      if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' }}
-      uses: docker/build-push-action@v6
-      with:
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
