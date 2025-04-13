@@ -140,7 +140,7 @@ runs:
       shell: bash
     - name: Run Semgrep scan and output to Github Security
       working-directory: ${{ inputs.source_dir }}
-      run: semgrep scan --sarif -o ${{ github.workspace }}/semgrep-output.sarif --oss-only --metrics=off
+      run: semgrep scan --sarif -o ${{ github.workspace }}/semgrep-output.sarif --oss-only 
       shell: bash
     - name: Upload SARIF report to GitHub (even if previous step failed)
       if: always()
@@ -151,7 +151,7 @@ runs:
         
     - name: Run Semgrep scan and fail on issues
       working-directory: ${{ inputs.source_dir }}
-      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep --metrics=off
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep 
       shell: bash
     - name: Add semgrep output to action summary
       working-directory: ${{ inputs.source_dir }}
