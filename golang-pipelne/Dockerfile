@@ -51,7 +51,6 @@ RUN chown -R ${USER_NAME}:${USER_NAME} ${APP} && \
 
 # Run App as User
 USER ${USER_NAME}
-WORKDIR ${HOME}
 
 ## Install project requirements, build project
 RUN go mod download; \

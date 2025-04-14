@@ -62,5 +62,4 @@ RUN . $CARGO_HOME/env && cargo build --release
 EXPOSE 8080
 # Run App as User
 USER ${USER_NAME}
-WORKDIR ${HOME}
 CMD [ "/app/cargo", "run" ]
