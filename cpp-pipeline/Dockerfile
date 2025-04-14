@@ -6,6 +6,7 @@ ENV USER_NAME=default
 
 ENV HOME="/home/${USER_NAME}"
 ENV PATH="${HOME}/.local/bin:${PATH}"
+# Production App will be stored in /app
 ENV APP="/app"
 
 USER root
@@ -19,9 +20,8 @@ dnf clean all
 
 # Create user and set permissions
 RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
-    useradd -u ${USER_ID} -r -g ${USER_NAME} -d ${HOME} -s /bin/bash ${USER_NAME} 
+    useradd -u ${USER_ID} -r -g ${USER_NAME} -m -d ${HOME} -s /bin/bash ${USER_NAME} 
 
-WORKDIR ${HOME}
 
 #-----------------------------
 
@@ -31,6 +31,7 @@ COPY .devcontainer/devtools.sh /tmp/devtools.sh
 # Install extra dev tools as root, then run as default user
 RUN chmod +x /tmp/devtools.sh && /tmp/devtools.sh  
 USER ${USER_NAME}
+WORKDIR ${HOME}
 
 # DEPLOYMENT EXAMPLE:
 #-----------------------------
@@ -49,6 +50,7 @@ RUN chown -R ${USER_NAME}:${USER_NAME} ${APP} && \
 
 # Run App as User
 USER ${USER_NAME}
+WORKDIR ${HOME}
 
 ## Install project requirements, build project
 RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G "Ninja"; \
