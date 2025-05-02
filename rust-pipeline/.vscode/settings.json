@@ -2,6 +2,7 @@
     // add to user settings if needed 
     // "dev.containers.dockerPath": "podman",
     // "dev.containers.dockerComposePath": "podman-compose",
+    // "containers.containerClient": "com.microsoft.visualstudio.containers.podman",
     // "docker.commands.composeUp": [
     //     {
     //         "label": "Compose Up",
