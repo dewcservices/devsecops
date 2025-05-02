@@ -31,7 +31,7 @@
 			"vscjava.vscode-java-test",
 			"vscjava.vscode-java-dependency",
 			// optional
-			"ms-azuretools.vscode-docker",
+			"ms-azuretools.vscode-containers",
 			"Semgrep.semgrep",
 			"AquaSecurityOfficial.trivy-vulnerability-scanner",
 			"GitHub.vscode-github-actions",
