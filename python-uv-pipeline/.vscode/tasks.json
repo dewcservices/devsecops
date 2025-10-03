@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Project Install",
+            "command": "uv",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "args": [
+                "pip",
+                "install",
+                "--force-reinstall",
+                "."
+            ],
+            "presentation": {
+                "echo": true,
+                "panel": "shared",
+                "focus": true
+            },
+        },
+    ]
+}

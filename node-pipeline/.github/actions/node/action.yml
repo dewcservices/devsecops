@@ -1,5 +1,5 @@
-name: Angular CI
-description: 'Builds, tests, and deploys a Node.js Angular application'
+name: Node CI
+description: 'Builds, tests, and deploys a Node.js application'
 
 inputs:
   github_token:
@@ -8,15 +8,6 @@ inputs:
   gitleaks_token:
     description: 'Organisational token for Gitleaks'
     required: false # only required for Organizations, not personal accounts
-  node_version:
-    description: 'Node Version'
-    required: false
-  sonar_token:
-    description: 'Token for SonarCloud access'
-    required: false
-  sonar_args:
-    description: 'Custom SonarCloud arguments'
-    required: false
   docker_image_name:
     description: 'Docker image name'
     required: true
@@ -26,13 +17,20 @@ inputs:
   dockerhub_token:
     description: 'Dockerhub Token'
     required: false
+  source_dir:
+    description: 'Source directory for the python application'
+    required: true
+    default: '.'
+
+
 
 runs:
   using: 'composite'
   steps:
-    - name: Get branch names.
+    - name: Extract branch name
       id: branch-names
-      uses: tj-actions/branch-names@v8
+      shell: bash
+      run: echo "current_branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -64,28 +62,50 @@ runs:
     - name: Install Node
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ inputs.node_version }}
+        node-version-file: '.nvmrc'
 
     - name: Install dependencies
       run: npm ci
+      working-directory: ${{ inputs.source_dir }}
       shell: bash
 
     - name: Create test:ci
       run: npm pkg set scripts.test:ci="ng test --no-watch --no-progress --browsers=ChromeHeadless"
+      working-directory: ${{ inputs.source_dir }}
       shell: bash
 
-    - name: Test Angular application (headless)
+    - name: Test Node application (headless)
       run: npm run test:ci
+      working-directory: ${{ inputs.source_dir }}
       shell: bash
 
-    - name: Sonarcloud SAST
-      if: ${{ inputs.sonar_token != '' }}
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
-        SONAR_TOKEN: ${{ inputs.sonar_token }}
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        args: ${{ inputs.sonar_args }}
+        python-version: '3.11'
+    - name: Install Semgrep
+      run: pip install semgrep
+      shell: bash
+    - name: Run Semgrep scan and output to Github Security
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --sarif -o ${{ github.workspace }}/semgrep-output.sarif --oss-only
+      shell: bash
+    - name: Upload SARIF report to GitHub (even if previous step failed)
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep-output.sarif
+        category: semgrep
+
+    - name: Run Semgrep scan and fail on issues
+      working-directory: ${{ inputs.source_dir }}
+      run: semgrep scan --severity ERROR --severity WARNING --oss-only --json-output=semgrep
+      shell: bash
+    - name: Add semgrep output to action summary
+      working-directory: ${{ inputs.source_dir }}
+      run: |
+        node .github/actions/node/semgrep.js >> $GITHUB_STEP_SUMMARY
+      shell: bash
 
     - name: Add QEMU support
       uses: docker/setup-qemu-action@v3
@@ -99,28 +119,44 @@ runs:
       shell: bash
 
     - name: Build Docker image for testing
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         load: true
         tags: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-    
+
+    - name: Run Trivy vulnerability scanner sarif
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
+        format: sarif
+        output: trivy.sarif
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+    - name: Upload SARIF report to GitHub
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: trivy.sarif
+        category: Trivy
+
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: ${{ inputs.docker_image_name }}:${{ env.formatted_branch_name }}
         format: template
-        template: "@/github/workspace/.github/actions/node/trivy.tpl"
-        output: trivy-high-critical.md
+        template: "@.github/actions/node/trivy.tpl"
+        output: trivy-high-critical.html
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
 
     - name: Add Trivy output to action summary
       run: | 
-        echo "<h1>Trivy Results :test_tube:</h1>" >> $GITHUB_STEP_SUMMARY
-        cat trivy-high-critical.md >> $GITHUB_STEP_SUMMARY
+        echo "<h1>Trivy Results :test_tube:</h1>" >> $GITHUB_STEP_SUMMARY; \
+        cat trivy-high-critical.html >> $GITHUB_STEP_SUMMARY
       shell: bash
 
     - name: Check if repository is public or private
@@ -185,7 +221,7 @@ runs:
 
     - name: Build and push image
       if: ${{ steps.branch-names.outputs.current_branch == 'main' && github.event_name == 'push' }}
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         push: true
         tags: ${{ steps.meta.outputs.tags }}

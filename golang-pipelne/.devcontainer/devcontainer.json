@@ -1,0 +1,56 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// https://github.com/devcontainers/templates/tree/main/src/python
+{
+	"name": "golang",
+	"build": {
+		"dockerfile": "../Dockerfile",
+		"context": "../",
+		"target": "dev"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+	},
+	// uncomment if the app/source directory is in a sub folder
+	// "workspaceMount": "source=${localWorkspaceFolder}/myApp,target=/workspace,type=bind",
+	// "workspaceFolder": "/workspace",
+
+	//may be needed for Podman
+	"runArgs": [
+		"--userns=keep-id",
+		"--pid=host"
+	],
+
+
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+		  "extensions": [
+			"golang.Go",
+			// optional
+			"ms-azuretools.vscode-containers",
+			"Semgrep.semgrep",
+			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"GitHub.vscode-github-actions",
+			"eamodio.gitlens",
+			"redhat.vscode-yaml",
+			"redhat.vscode-xml",
+			"ecmel.vscode-html-css",
+			"bierner.markdown-mermaid",
+			"esbenp.prettier-vscode",
+			"mechatroner.rainbow-csv",
+			"editorconfig.editorconfig"
+		],
+		  "settings": {
+			"[go]": {
+			  "editor.defaultFormatter": "golang.Go",
+			},
+			 "editor.tabSize": 4,
+			 "workbench.tree.indent": 14,
+			 "trivy.offlineScan": true
+             
+			 //"files.autoSaveWhenNoErrors": true,
+			 //"files.autoSaveWorkspaceFilesOnly": true
+		  }
+		}
+	  }	  
+}

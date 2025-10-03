@@ -1,0 +1,36 @@
+name: CPP CI Pipeline
+
+on: [push]
+
+env:
+  DOCKER_IMAGE_NAME: ""
+  PROJECT_DIR: "."
+  BUILD_SYSTEM: "Ninja"
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      packages: write
+      actions: read
+      security-events: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Run Custom CPP CI action
+      uses: ./.github/actions/cpp
+      with: 
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        gitleaks_token: ${{ secrets.GITLEAKS_TOKEN }}
+        source_dir:  ${{ env.PROJECT_DIR }}
+        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+        docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
+        build_system: ${{env.BUILD_SYSTEM}}

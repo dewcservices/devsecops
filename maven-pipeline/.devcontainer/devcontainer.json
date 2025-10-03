@@ -1,0 +1,60 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+{
+	"name": "java-maven-devcontainer",
+	"build": {
+		"dockerfile": "../Dockerfile",
+		"context": "../",
+		"target": "dev"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+	},
+	// uncomment if the app/source directory is in a sub folder
+	// "workspaceMount": "source=${localWorkspaceFolder}/myApp,target=/workspace,type=bind",
+	// "workspaceFolder": "/workspace",
+
+	// may be needed for Podman
+	"runArgs": [
+		"--userns=keep-id",
+		"--pid=host"
+	],
+
+
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+		  // Add the IDs of extensions you want installed when the container is created.
+		  "extensions": [
+			"vscjava.vscode-maven",
+			"redhat.java",
+			"vscjava.vscode-java-pack",
+			"vscjava.vscode-java-test",
+			"vscjava.vscode-java-dependency",
+			// optional
+			"ms-azuretools.vscode-containers",
+			"Semgrep.semgrep",
+			"AquaSecurityOfficial.trivy-vulnerability-scanner",
+			"GitHub.vscode-github-actions",
+			"eamodio.gitlens",
+			"redhat.vscode-yaml",
+			"redhat.vscode-xml",
+			"ecmel.vscode-html-css",
+			"bierner.markdown-mermaid",
+			"esbenp.prettier-vscode",
+			"mechatroner.rainbow-csv",
+			"editorconfig.editorconfig"
+		],
+		  "settings": {
+			"[java]": {
+			  "editor.defaultFormatter": "vscjava.vscode-maven",
+			},
+			 "editor.tabSize": 4,
+			 "workbench.tree.indent": 14,
+			 "trivy.offlineScan": true             
+			 //"files.autoSaveWhenNoErrors": true,
+			 //"files.autoSaveWorkspaceFilesOnly": true
+		  }
+		}
+	  }
+	  
+}

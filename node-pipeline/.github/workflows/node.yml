@@ -1,0 +1,33 @@
+name: Node CI Workflow
+
+on: [push]
+
+env:
+  DOCKER_IMAGE_NAME: ""
+  NODEJS_APP_SOURCE_DIR: "."
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      packages: write
+      actions: read
+      security-events: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  
+
+    - name: Run Custom Nodejs action
+      uses: ./.github/actions/node
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        docker_image_name: ${{ env.DOCKER_IMAGE_NAME || github.event.repository.name }}
+        dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+        dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+        source_dir: ${{ env.NODEJS_APP_SOURCE_DIR }}
