@@ -14,9 +14,18 @@
 	// "workspaceFolder": "/workspace",
 
 	// may be needed for Podman
-	"runArgs": [
-		"--userns=keep-id",
-		"--pid=host"
+	// "runArgs": [
+	// 	"--userns=keep-id",
+	// 	"--pid=host"
+	// ],
+
+	// Mount your personal git, bash and ssh config files so you can use your 
+	// existing ssh keys and git config inside the dev container.
+	"mounts": [
+		"source=${env:HOME}/.gitconfig,target=/home/default/.gitconfig,readonly,type=bind",
+		"source=${env:HOME}/.bashrc,target=/home/default/.bashrc,readonly,type=bind",
+		"source=${env:HOME}/.bash_history,target=/home/default/.bash_history,type=bind",
+		"source=${env:HOME}/.ssh,target=/home/default/.ssh,readonly,type=bind"
 	],
 
 	"customizations": {
@@ -27,7 +36,8 @@
 			"dbaeumer.vscode-eslint",
 			"ms-vscode.vscode-typescript-next",
 			"ms-vscode.vscode-typescript",
-			"Angular.ng-template",
+			// Angular
+			// "Angular.ng-template",
 			// Vue
 			// "Vue.volar",
 			// React
