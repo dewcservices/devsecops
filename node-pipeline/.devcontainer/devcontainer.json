@@ -10,8 +10,8 @@
 		"ghcr.io/devcontainers/features/common-utils:2": {}
 	},
 	// uncomment if the app/source directory is in a sub folder
-	// "workspaceMount": "source=${localWorkspaceFolder}/myApp,target=/workspace,type=bind",
-	// "workspaceFolder": "/workspace",
+	// "workspaceMount": "source=${localWorkspaceFolder}/myApp,target=/app,type=bind",
+	// "workspaceFolder": "/app",
 
 	// may be needed for Podman
 	// "runArgs": [
@@ -23,8 +23,6 @@
 	// existing ssh keys and git config inside the dev container.
 	"mounts": [
 		"source=${env:HOME}/.gitconfig,target=/home/default/.gitconfig,readonly,type=bind",
-		"source=${env:HOME}/.bashrc,target=/home/default/.bashrc,readonly,type=bind",
-		"source=${env:HOME}/.bash_history,target=/home/default/.bash_history,type=bind",
 		"source=${env:HOME}/.ssh,target=/home/default/.ssh,readonly,type=bind"
 	],
 
