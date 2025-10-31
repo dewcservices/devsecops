@@ -55,3 +55,7 @@ The pipelines uses your commit messages to determine the [semantic version](http
 - If `BREAKING CHANGE` is found in the footer for any commit, regardless of type, the major version is incremented. E.g. `v1.0.2 --> v2.0.0`
 
 This means pushes that have only commit types like `test:` and `chore:` won't increase the version number unless `BREAKING CHANGE` is included.
+
+# Further Development Ideas
+- Replace Git Leaks
+- Add git hooks

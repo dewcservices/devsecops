@@ -12,7 +12,7 @@
 	"workspaceFolder": "/app",
 	// uncomment if the app/source directory is in a sub folder
 	// "workspaceMount": "source=${localWorkspaceFolder}/myApp,target=/app,type=bind",
-	
+
 	// may be needed for Podman
 	// "runArgs": [
 	// 	"--userns=keep-id",
@@ -25,7 +25,7 @@
 		"source=${env:HOME}/.gitconfig,target=/home/default/.gitconfig,readonly,type=bind",
 		"source=${env:HOME}/.ssh,target=/home/default/.ssh,readonly,type=bind"
 	],
-
+	
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {

@@ -7,7 +7,6 @@ ENV USER_NAME=default
 
 ENV HOME="/home/${USER_NAME}"
 ENV PATH="${HOME}/.local/bin:${PATH}"
-# Production App will be stored in /app
 ENV APP="/app"
 
 
@@ -16,7 +15,7 @@ USER root
 # Check for package update
 RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
 # Install git, nano, java maven
-dnf install git nano java-21-openjdk maven -y; \
+dnf install git nano vim java-21-openjdk maven -y; \
 # clear cache
 dnf clean all
 
@@ -34,7 +33,7 @@ COPY .devcontainer/devtools.sh /tmp/devtools.sh
 # Install extra dev tools as root, then run as default user
 RUN chmod +x /tmp/devtools.sh && /tmp/devtools.sh  
 USER ${USER_NAME}
-WORKDIR ${HOME}
+WORKDIR ${APP}
 
 # DEPLOYMENT EXAMPLE:
 #-----------------------------
@@ -58,12 +57,10 @@ EOF
 ## Move to app folder, copy project into container
 WORKDIR ${APP}
 ## REPLACE: replace this COPY statement with project specific files/folders
-COPY . . 
+COPY --chown=${USER_NAME}:${USER_NAME} . .
 
 # Check App permissions
-RUN chown -R ${USER_NAME}:${USER_NAME} ${APP} && \
-    chmod -R 0750 ${APP}; \
-    chown -R default:default /usr/local/tomcat11/webapps/ 
+RUN chown -R default:default /usr/local/tomcat11/webapps/ 
 
 
 # Run App as User

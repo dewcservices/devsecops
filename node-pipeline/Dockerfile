@@ -14,7 +14,7 @@ USER root
 RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
 # Install git, nano, nodejs and npm
 dnf module enable nodejs:22 -y && \
-dnf install git nano nodejs npm vim -y; \
+dnf install git nano vim nodejs npm -y; \
 # clear cache
 dnf clean all
 
