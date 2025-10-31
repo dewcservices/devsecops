@@ -7,7 +7,6 @@ ENV USER_NAME=default
 
 ENV HOME="/home/${USER_NAME}"
 ENV PATH="${HOME}/.local/bin:${PATH}"
-# Production App will be stored in /app
 ENV APP="/app"
 
 ENV PYTHONUNBUFFERED=1
@@ -17,7 +16,7 @@ USER root
 # Check for package update
 RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
     # Install git, nano, python 
-    dnf install git nano python3 -y; \
+    dnf install git nano vim python3 -y; \
     # clear cache
     dnf clean all
 
@@ -38,7 +37,7 @@ COPY .devcontainer/devtools.sh /tmp/devtools.sh
 # Install extra dev tools as root, then run as default user
 RUN chmod +x /tmp/devtools.sh && /tmp/devtools.sh  
 USER ${USER_NAME}
-WORKDIR ${HOME}
+WORKDIR ${APP}
 
 # DEPLOYMENT EXAMPLE:
 #-----------------------------
@@ -49,11 +48,7 @@ FROM base
 ## Move to app folder, copy project into container
 WORKDIR ${APP}
 ## REPLACE: replace this COPY statement with project specific files/folders
-COPY . . 
-
-# Check App permissions
-RUN chown -R ${USER_NAME}:${USER_NAME} ${APP} && \
-    chmod -R 0750 ${APP}
+COPY --chown=${USER_NAME}:${USER_NAME} . .
 
 # Run App as User
 USER ${USER_NAME}
