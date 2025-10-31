@@ -6,7 +6,6 @@ ENV USER_NAME=default
 
 ENV HOME="/home/${USER_NAME}"
 ENV PATH="${HOME}/.local/bin:${PATH}"
-# Production App will be stored in /app
 ENV APP="/app"
 
 USER root
@@ -15,7 +14,7 @@ USER root
 RUN dnf -y update-minimal --security --sec-severity=Important --sec-severity=Critical && \
 # Install git, nano, nodejs and npm
 dnf module enable nodejs:22 -y && \
-dnf install git nano nodejs npm -y; \
+dnf install git nano nodejs npm vim -y; \
 # clear cache
 dnf clean all
 
@@ -33,7 +32,7 @@ RUN chmod +x /tmp/devtools.sh && /tmp/devtools.sh
 # Open dev port
 EXPOSE 8000
 USER ${USER_NAME}
-WORKDIR ${HOME}
+WORKDIR ${APP}
 
 # DEPLOYMENT EXAMPLE:
 #-----------------------------
@@ -44,11 +43,7 @@ FROM base
 ## Move to app folder, copy project into container
 WORKDIR ${APP}
 ## REPLACE: replace this COPY statement with project specific files/folders
-COPY . . 
-
-# Check App permissions
-RUN chown -R ${USER_NAME}:${USER_NAME} ${APP} && \
-    chmod -R 0750 ${APP}
+COPY --chown=${USER_NAME}:${USER_NAME} . .
 
 # Run App as User
 USER ${USER_NAME}

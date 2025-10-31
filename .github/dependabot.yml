@@ -6,19 +6,28 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
-    directory: "/" 
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "docker"
     directories:
+      - "/cpp-pipeline/"
+      - "/golang-pipeline/"
       - "/gradle-pipeline/"
       - "/maven-pipeline/"
       - "/node-pipeline/"
       - "/python-pipeline/"
       - "/python-poetry-pipeline/"
       - "/python-uv-pipeline/"
+      - "/rust-pipeline/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directories:
       - "/cpp-pipeline/"
-      - "/golang-pipelne/"
-      - "/rust-pipelne/"
+      - "/golang-pipeline/"
+      - "/gradle-pipeline/"
+      - "/maven-pipeline/"
+      - "/node-pipeline/"
+      - "/python-pipeline/"
+      - "/python-poetry-pipeline/"
+      - "/python-uv-pipeline/"
+      - "/rust-pipeline/"
     schedule:
       interval: "weekly"
