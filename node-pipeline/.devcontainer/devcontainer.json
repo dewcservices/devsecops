@@ -9,10 +9,10 @@
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {}
 	},
+	"workspaceFolder": "/app",
 	// uncomment if the app/source directory is in a sub folder
 	// "workspaceMount": "source=${localWorkspaceFolder}/myApp,target=/app,type=bind",
-	// "workspaceFolder": "/app",
-
+	
 	// may be needed for Podman
 	// "runArgs": [
 	// 	"--userns=keep-id",
